@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 6514044275169180980}
   - component: {fileID: 8150216145431433144}
   m_Layer: 0
-  m_Name: CrystalObject
+  m_Name: CrystalObject1
   m_TagString: CrystalDash
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
