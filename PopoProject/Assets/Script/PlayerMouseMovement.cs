@@ -25,11 +25,13 @@ public class PlayerMouseMovement : MonoBehaviour
     // === 내부 상태 ===
     private bool isFlying = false;
     private Vector2 flyDirection;
+    private Animator ani;
     private float holdStartTime;
     private bool leftFlying, rightFlying;
     private bool leftHeld, rightHeld;
     private float leftClickTime, rightClickTime;
     private float doubleClickThreshold = 0.3f; // 더블클릭 허용 간격
+    private float dir = 0.5f;
 
     private bool isDashing = false;
     private bool isJumping = false;
@@ -52,6 +54,7 @@ public class PlayerMouseMovement : MonoBehaviour
     {
         // Rigidbody2D 연결
         rb = GetComponent<Rigidbody2D>();
+        ani = GetComponent<Animator>();
     }
 
     void Update()
@@ -71,6 +74,7 @@ public class PlayerMouseMovement : MonoBehaviour
         // 왼쪽 입력 더블클릭 시 Boost 발동
         if (leftInputDown)
         {
+            dir = -0.5f;
             if (lastClickDir == InputDirection.Left && Time.time - leftClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
                 if (currentBoost == BoostType.Dash && !isDashing)
@@ -90,6 +94,7 @@ public class PlayerMouseMovement : MonoBehaviour
 
         if (rightInputDown)
         {
+            dir = 0.5f;
             if (lastClickDir == InputDirection.Right && Time.time - rightClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
                 if (currentBoost == BoostType.Dash && !isDashing)
@@ -107,7 +112,19 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
+        if (isFlying)
+        {
+            ani.SetBool("jump", true);
 
+        }
+        else if(grounded)
+        {
+            ani.SetBool("jump", false);
+        }
+
+        transform.localScale = new Vector3(dir, 0.5f, 1);
+
+        
         // 공중에서 양쪽 입력 시 낙하
         // 공중에서만 양쪽 입력으로 낙하 실행
         if (!IsGrounded() && Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && !isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
