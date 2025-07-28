@@ -32,6 +32,7 @@ public class PlayerMouseMovement : MonoBehaviour
     private float leftClickTime, rightClickTime;
     private float doubleClickThreshold = 0.3f; // 더블클릭 허용 간격
     private float dir = 1f;
+    private float timer = 0;
 
     private bool isDashing = false;
     private bool isJumping = false;
@@ -114,12 +115,19 @@ public class PlayerMouseMovement : MonoBehaviour
 
         if (isFlying)
         {
+            timer = 0;
             ani.SetBool("jump", true);
-
         }
-        else if(grounded)
+        else if(grounded && !leftInputHeld && !rightInputHeld)
         {
+            timer += Time.deltaTime;
             ani.SetBool("jump", false);
+            ani.SetBool("att", true);
+
+            if (timer >= 0.35f)
+            {
+                ani.SetBool("att", false);
+            }
         }
 
         transform.localScale = new Vector3(dir, 1f, 1);
@@ -337,7 +345,7 @@ public class PlayerMouseMovement : MonoBehaviour
     // 바닥 체크
     bool IsGrounded()
     {
-        float rayDistance = 0.7f;
+        float rayDistance = 1.3f;
         Vector2 origin = transform.position + Vector3.down * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, groundLayer);
         Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
