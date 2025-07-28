@@ -31,12 +31,10 @@ public class PlayerMouseMovement : MonoBehaviour
     private bool leftHeld, rightHeld;
     private float leftClickTime, rightClickTime;
     private float doubleClickThreshold = 0.3f; // 더블클릭 허용 간격
-<<<<<<< HEAD
     private float dir = 1f;
     private float timer = 0;
-=======
-    private float dir = 0.5f;
->>>>>>> parent of 29e3021 (Merge branch 'main' of https://github.com/tjdnqls0520/402Project)
+
+    
 
     private bool isDashing = false;
     private bool isJumping = false;
@@ -79,7 +77,7 @@ public class PlayerMouseMovement : MonoBehaviour
         // 왼쪽 입력 더블클릭 시 Boost 발동
         if (leftInputDown)
         {
-            dir = -0.5f;
+            dir = -1f;
             if (lastClickDir == InputDirection.Left && Time.time - leftClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
                 if (currentBoost == BoostType.Dash && !isDashing)
@@ -99,7 +97,7 @@ public class PlayerMouseMovement : MonoBehaviour
 
         if (rightInputDown)
         {
-            dir = 0.5f;
+            dir = 1f;
             if (lastClickDir == InputDirection.Right && Time.time - rightClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
                 if (currentBoost == BoostType.Dash && !isDashing)
@@ -134,7 +132,7 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
-        transform.localScale = new Vector3(dir, 0.5f, 1);
+        transform.localScale = new Vector3(dir, 1f, 1);
 
         
         // 공중에서 양쪽 입력 시 낙하
