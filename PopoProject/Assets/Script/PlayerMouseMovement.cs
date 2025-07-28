@@ -279,8 +279,10 @@ public class PlayerMouseMovement : MonoBehaviour
 
         rb.linearVelocity = Vector2.down * 2f;
         rb.gravityScale = 2f;
-        
+
     }
+
+
 
     // 크리스탈 효과 등록
     public void SetBoost(BoostType type)
