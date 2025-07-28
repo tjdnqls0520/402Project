@@ -130,7 +130,6 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
-
         transform.localScale = new Vector3(dir, 1f, 1);
 
         
