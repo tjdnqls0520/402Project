@@ -6,6 +6,8 @@
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMouseMovement : MonoBehaviour
 {
@@ -39,6 +41,10 @@ public class PlayerMouseMovement : MonoBehaviour
     private int queuedDirection = 0; // -1 = 왼쪽, 1 = 오른쪽
     private enum InputDirection { None, Left, Right }
     private InputDirection lastClickDir = InputDirection.None;
+    private float bothClickTime = 0f;
+    private float bothClickThreshold = 0.1f;
+    private float fallCooldown = 0.2f; // 크리스탈 먹고 낙하 잠금 시간
+    private float fallLockUntil = 0f;
 
 
     public enum BoostType { None, Dash, Jump }
@@ -121,7 +127,7 @@ public class PlayerMouseMovement : MonoBehaviour
         
         // 공중에서 양쪽 입력 시 낙하
         // 공중에서만 양쪽 입력으로 낙하 실행
-        if (!grounded && leftInputDown && rightInputDown && !isDashing && !isJumping && !isFlying)
+        if (!IsGrounded() && Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && !isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
         {
             StartFall();
         }
@@ -232,8 +238,10 @@ public class PlayerMouseMovement : MonoBehaviour
     void StartFall()
     {
         isFlying = false;
-        rb.gravityScale = 5f;
+        rb.gravityScale = 8.5f;
         rb.linearVelocity = Vector2.down * 20f;
+        Debug.Log("낙하");
+        
     }
 
     // 대시 코루틴
@@ -307,8 +315,8 @@ public class PlayerMouseMovement : MonoBehaviour
         currentBoost = type;
 
         // 더블클릭 타이머 초기화
-        leftClickTime = 0f;
-        rightClickTime = 0f;
+  
+
     }
 
     // 크리스탈 충돌 판정
