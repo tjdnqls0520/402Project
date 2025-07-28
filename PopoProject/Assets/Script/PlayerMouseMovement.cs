@@ -31,7 +31,8 @@ public class PlayerMouseMovement : MonoBehaviour
     private bool leftHeld, rightHeld;
     private float leftClickTime, rightClickTime;
     private float doubleClickThreshold = 0.3f; // 더블클릭 허용 간격
-    private float dir = 0.5f;
+    private float dir = 1f;
+    private float timer = 0;
 
     private bool isDashing = false;
     private bool isJumping = false;
@@ -74,7 +75,7 @@ public class PlayerMouseMovement : MonoBehaviour
         // 왼쪽 입력 더블클릭 시 Boost 발동
         if (leftInputDown)
         {
-            dir = -0.5f;
+            dir = -1f;
             if (lastClickDir == InputDirection.Left && Time.time - leftClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
                 if (currentBoost == BoostType.Dash && !isDashing)
@@ -94,7 +95,7 @@ public class PlayerMouseMovement : MonoBehaviour
 
         if (rightInputDown)
         {
-            dir = 0.5f;
+            dir = 1f;
             if (lastClickDir == InputDirection.Right && Time.time - rightClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
                 if (currentBoost == BoostType.Dash && !isDashing)
@@ -114,15 +115,23 @@ public class PlayerMouseMovement : MonoBehaviour
 
         if (isFlying)
         {
+            timer = 0;
             ani.SetBool("jump", true);
-
         }
-        else if(grounded)
+        else if(grounded && !leftInputHeld && !rightInputHeld)
         {
+            timer += Time.deltaTime;
             ani.SetBool("jump", false);
+            ani.SetBool("att", true);
+
+            if (timer >= 0.35f)
+            {
+                ani.SetBool("att", false);
+            }
         }
 
-        transform.localScale = new Vector3(dir, 0.5f, 1);
+
+        transform.localScale = new Vector3(dir, 1f, 1);
 
         
         // 공중에서 양쪽 입력 시 낙하
@@ -337,7 +346,7 @@ public class PlayerMouseMovement : MonoBehaviour
     // 바닥 체크
     bool IsGrounded()
     {
-        float rayDistance = 0.7f;
+        float rayDistance = 1.3f;
         Vector2 origin = transform.position + Vector3.down * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, groundLayer);
         Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
