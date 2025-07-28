@@ -28981,28 +28981,28 @@ PrefabInstance:
     - {fileID: 1400473274656965652, guid: dda130a12207d94469033caaa792a31e, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4578466322388261836, guid: dda130a12207d94469033caaa792a31e, type: 3}
-      insertIndex: 1
+      insertIndex: -1
       addedObject: {fileID: 1802497117}
     - targetCorrespondingSourceObject: {fileID: 4578466322388261836, guid: dda130a12207d94469033caaa792a31e, type: 3}
-      insertIndex: 2
+      insertIndex: -1
       addedObject: {fileID: 114243615}
     - targetCorrespondingSourceObject: {fileID: 4578466322388261836, guid: dda130a12207d94469033caaa792a31e, type: 3}
-      insertIndex: 3
+      insertIndex: -1
       addedObject: {fileID: 667769301}
     - targetCorrespondingSourceObject: {fileID: 4578466322388261836, guid: dda130a12207d94469033caaa792a31e, type: 3}
-      insertIndex: 4
+      insertIndex: -1
       addedObject: {fileID: 1936667282}
     - targetCorrespondingSourceObject: {fileID: 4578466322388261836, guid: dda130a12207d94469033caaa792a31e, type: 3}
-      insertIndex: 5
+      insertIndex: -1
       addedObject: {fileID: 1498108133}
     - targetCorrespondingSourceObject: {fileID: 4578466322388261836, guid: dda130a12207d94469033caaa792a31e, type: 3}
-      insertIndex: 6
+      insertIndex: -1
       addedObject: {fileID: 704663918}
     - targetCorrespondingSourceObject: {fileID: 4578466322388261836, guid: dda130a12207d94469033caaa792a31e, type: 3}
-      insertIndex: 7
+      insertIndex: -1
       addedObject: {fileID: 1837817157}
     - targetCorrespondingSourceObject: {fileID: 4578466322388261836, guid: dda130a12207d94469033caaa792a31e, type: 3}
-      insertIndex: 8
+      insertIndex: -1
       addedObject: {fileID: 792908115}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dda130a12207d94469033caaa792a31e, type: 3}
