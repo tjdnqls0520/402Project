@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: c20626c9de5d17d4ebe3e46e6bdfa75f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 283656
+  packageName: Inventory Framework
+  packageVersion: 1.6.1
+  assetPath: Assets/GDS/Core/Inventory/Shapes.cs
+  uploadId: 767839

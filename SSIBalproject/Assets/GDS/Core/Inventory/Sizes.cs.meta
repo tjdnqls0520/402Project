@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: a9f9e3919dbceb64f95bc64917b1ee8b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 283656
+  packageName: Inventory Framework
+  packageVersion: 1.6.1
+  assetPath: Assets/GDS/Core/Inventory/Sizes.cs
+  uploadId: 767839

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 619f55cdd69ece2408d9a2fafa783be6
+timeCreated: 1514705542
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 104130
+  packageName: Bandits - Pixel Art
+  packageVersion: 2.2
+  assetPath: Assets/Bandits - Pixel Art/Animations/Light Bandit/LightBandit_Run.anim
+  uploadId: 384983

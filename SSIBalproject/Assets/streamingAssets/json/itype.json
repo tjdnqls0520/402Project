@@ -1,0 +1,108 @@
+{
+  "list": [
+    {
+      "type": "채집",
+      "ID": "g_01_01_001",
+      "name": "민들레'",
+      "time": 0,
+      "weight": 0.1,
+      "EXP": 2,
+      "bag": 1,
+      "need_stm": 10,
+      "chest_drop": 1,
+      "need_more": 0,
+      "muukum": 6
+    },
+    {
+      "type": "채집",
+      "ID": "g_01_01_002",
+      "name": "파랑버섯'",
+      "time": 1,
+      "weight": 0.3,
+      "EXP": 3.5,
+      "bag": 1,
+      "need_stm": 12,
+      "chest_drop": 1,
+      "need_more": 0,
+      "muukum": 5
+    },
+    {
+      "type": "채광",
+      "ID": "g_02_01_001",
+      "name": "구리'",
+      "time": 2,
+      "weight": 1,
+      "EXP": 4,
+      "bag": 4,
+      "need_stm": 25,
+      "chest_drop": 1,
+      "need_more": 0,
+      "muukum": 6
+    },
+    {
+      "type": "채광",
+      "ID": "g_02_01_002",
+      "name": "철'",
+      "time": 4,
+      "weight": 2,
+      "EXP": 5,
+      "bag": 4,
+      "need_stm": 35,
+      "chest_drop": 1,
+      "need_more": 0,
+      "muukum": 4
+    },
+    {
+      "type": "도축",
+      "ID": "g_03_01_001",
+      "name": "작은 동물 뼈'",
+      "time": "",
+      "weight": 0.3,
+      "EXP": 3,
+      "bag": 3,
+      "need_stm": 20,
+      "chest_drop": 1,
+      "need_more": 0,
+      "muukum": 6
+    },
+    {
+      "type": "도축",
+      "ID": "g_03_01_002",
+      "name": "너덜한 가죽'",
+      "time": "",
+      "weight": 1,
+      "EXP": 4.5,
+      "bag": 2,
+      "need_stm": 23,
+      "chest_drop": 1,
+      "need_more": 0,
+      "muukum": 4
+    },
+    {
+      "type": "조사",
+      "ID": "g_04_01_001",
+      "name": "동화'",
+      "time": "",
+      "weight": 0.2,
+      "EXP": "",
+      "bag": 1,
+      "need_stm": "",
+      "chest_drop": 1,
+      "need_more": 1,
+      "muukum": 6
+    },
+    {
+      "type": "조사",
+      "ID": "g_04_01_002",
+      "name": "은화'",
+      "time": "",
+      "weight": 0.2,
+      "EXP": "",
+      "bag": 1,
+      "need_stm": "",
+      "chest_drop": 1,
+      "need_more": 1,
+      "muukum": 3
+    }
+  ]
+}

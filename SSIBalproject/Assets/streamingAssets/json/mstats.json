@@ -1,0 +1,34 @@
+{
+
+  "list":[
+    {
+      "id": "M_M_001",
+      "name": "MM1",
+      "hp": 116,
+      "atk": 15,
+      "def": 0,
+      "move_speed": 20,
+      "attack_speed": 0.8,
+      "base_weapon": "ls1",
+      "default_activeslot": "mm1a','mm2a'",
+      "default_passiveslot": "m1p','m2p'",
+      "drop_EXP": 12,
+      "craft_time": 0
+    },
+    {
+      "id": "M_R_001",
+      "name": "RM1",
+      "hp": 87,
+      "atk": 9,
+      "def": 0,
+      "move_speed": 25,
+      "attack_speed": 1.1,
+      "base_weapon": "bo1",
+      "default_activeslot": "rm1a','rm2a'",
+      "default_passiveslot": "m3p','m4p'",
+      "drop_EXP": 11,
+      "craft_time": 0
+    }
+  ]
+
+}

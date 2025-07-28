@@ -1,0 +1,167 @@
+{
+  "list": [
+    {
+      "id": "a1",
+      "name": "worrior",
+      "hp": 50,
+      "atk": 29,
+      "def": 0,
+      "move_speed": 30,
+      "attack_speed": 1,
+      "gathering_speed": 14,
+      "stm": 100,
+      "defult_weight": 50,
+      "limit_bag": 25,
+      "active_skills": [
+        "w1a",
+        "w2a",
+        "w3a",
+        "w4a"
+      ],
+      "passive_skills": [
+        "w1p",
+        "w2p",
+        "w3p",
+        "w4p"
+      ],
+      "recommended": 1,
+      "intro_story": "",
+      "base_weapon": "ls1",
+      "default_activeslot": [
+        "w1a",
+        "w2a"
+      ],
+      "default_passiveslot": [
+        "w1p",
+        "w2p"
+      ],
+      "default_male": [
+        "01_01_001",
+        "02_01_001"
+      ]
+    },
+    {
+      "id": "a2",
+      "name": "spear",
+      "hp": 45,
+      "atk": 26,
+      "def": 0,
+      "move_speed": 35,
+      "attack_speed": 1.2,
+      "gathering_speed": 9,
+      "stm": 100,
+      "defult_weight": 40,
+      "limit_bag": 30,
+      "active_skills": [
+        "s1a",
+        "s2a",
+        "s3a",
+        "s4a"
+      ],
+      "passive_skills": [
+        "s1p",
+        "s2p",
+        "s3p",
+        "s4p"
+      ],
+      "recommended": 1,
+      "intro_story": "",
+      "base_weapon": "sp1",
+      "default_activeslot": [
+        "s1a",
+        "s2a"
+      ],
+      "default_passiveslot": [
+        "s1p",
+        "s2p"
+      ],
+      "default_male": [
+        "01_01_001",
+        "02_01_002"
+      ]
+    },
+    {
+      "id": "a3",
+      "name": "thief",
+      "hp": 35,
+      "atk": 24,
+      "def": 0,
+      "move_speed": 40,
+      "attack_speed": 1.6,
+      "gathering_speed": 11,
+      "stm": 100,
+      "defult_weight": 30,
+      "limit_bag": 20,
+      "active_skills": [
+        "t1a",
+        "t2a",
+        "t3a",
+        "t4a"
+      ],
+      "passive_skills": [
+        "t1p",
+        "t2p",
+        "t3p",
+        "t4p"
+      ],
+      "recommended": 0,
+      "intro_story": "",
+      "base_weapon": "kn1",
+      "default_activeslot": [
+        "t1a",
+        "t2a"
+      ],
+      "default_passiveslot": [
+        "t1p",
+        "t2p"
+      ],
+      "default_male": [
+        "01_01_001",
+        "02_01_003"
+      ]
+    },
+    {
+      "id": "a4",
+      "name": "cat",
+      "hp": 40,
+      "atk": 18,
+      "def": 0,
+      "move_speed": 30,
+      "attack_speed": 1,
+      "gathering_speed": 5,
+      "stm": 100,
+      "defult_weight": 40,
+      "limit_bag": 40,
+      "active_skills": [
+        "c1a",
+        "c2a",
+        "c3a",
+        "c4a"
+      ],
+      "passive_skills": [
+        "c1p",
+        "c2p",
+        "c3p",
+        "c4p"
+      ],
+      "recommended": 0,
+      "intro_story": "",
+      "base_weapon": "bo1",
+      "default_activeslot": [
+        "c1a",
+        "c2a"
+      ],
+      "default_passiveslot": [
+        "c1p",
+        "c2p"
+      ],
+      "default_male": [
+        "01_01_001",
+        "02_01_004"
+      ]
+    }
+
+  ]
+}
+
+

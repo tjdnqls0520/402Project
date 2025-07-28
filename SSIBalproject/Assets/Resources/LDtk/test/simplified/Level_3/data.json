@@ -1,0 +1,22 @@
+{
+	"identifier": "Level_3",
+	"uniqueIdentifer": "db184440-3740-11f0-a708-b5ca3d9a2ceb",
+	"x": 512,
+	"y": 0,
+	"width": 256,
+	"height": 256,
+	"bgColor": "#696A79",
+	"neighbourLevels": [
+		{
+			"levelIid": "1b7c5190-3740-11f0-82b6-c10b59ced422",
+			"dir": "w"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"Plat.png",
+		"Sadari.png",
+		"IntGrid_baked.png"
+	],
+	"entities" : {}
+}

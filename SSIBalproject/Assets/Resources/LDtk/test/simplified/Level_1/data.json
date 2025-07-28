@@ -1,0 +1,30 @@
+{
+	"identifier": "Level_1",
+	"uniqueIdentifer": "1b7c5190-3740-11f0-82b6-c10b59ced422",
+	"x": 256,
+	"y": 0,
+	"width": 256,
+	"height": 256,
+	"bgColor": "#696A79",
+	"neighbourLevels": [
+		{
+			"levelIid": "6a160ae0-3740-11f0-82b6-15dbec6aee46",
+			"dir": "w"
+		},
+		{
+			"levelIid": "81bcbf70-3740-11f0-a708-cffc4c3c5b78",
+			"dir": "nw"
+		},
+		{
+			"levelIid": "db184440-3740-11f0-a708-b5ca3d9a2ceb",
+			"dir": "e"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"Plat.png",
+		"Sadari.png",
+		"IntGrid_baked.png"
+	],
+	"entities" : {}
+}
