@@ -23,13 +23,14 @@ public class PlayerMouseMovement : MonoBehaviour
     public LayerMask trapLayer;
     public float rayRadius = 0.1f; // ← 레이의 '두께'를 담당해요!
     public bool isFlying = false;
-    private bool isBoostFlying = false; // ★ Boost 비행 중인지
+    public bool getskill = false;
+    public bool isBoostFlying = false; // ★ Boost 비행 중인지
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
 
     private Vector2 flyDirection;
     private Animator ani;
     private float holdStartTime;
-    private bool leftFlying, rightFlying;
+    public bool leftFlying, rightFlying;
     private bool leftHeld, rightHeld;
     private float leftClickTime, rightClickTime;
     private float doubleClickThreshold = 0.3f;
@@ -120,20 +121,6 @@ public class PlayerMouseMovement : MonoBehaviour
                 lastClickDir = InputDirection.Right;
                 rightClickTime = Time.time;
             }
-        }
-
-        if (isFlying)
-        {
-            timer = 0;
-            ani.SetBool("jump", true);
-        }
-        else if ((grounded || breaked) && !leftInputHeld && !rightInputHeld)
-        {
-            timer += Time.deltaTime;
-            ani.SetBool("jump", false);
-            ani.SetBool("att", true);
-            if (timer >= 0.35f)
-                ani.SetBool("att", false);
         }
 
         transform.localScale = new Vector3(dir, 1f, 1f);
@@ -282,7 +269,7 @@ public class PlayerMouseMovement : MonoBehaviour
         }
 
         // ★ Boost 비행 중 → 바닥에 닿으면 종료
-        if (isBoostFlying && (IsGrounded() || IsBreak()))
+        if (isBoostFlying && (IsGrounded() || IsBreak() || IsWalledLeft() || IsWalledRight()))
         {
             StopBoostFly();
         }
@@ -342,6 +329,7 @@ public class PlayerMouseMovement : MonoBehaviour
     // ★ Boost 비행 시작 함수
     void StartBoostFly(BoostType type, Vector2 direction)
     {
+        getskill = true;
         isBoostFlying = true;
         boostStartTime = Time.time;
         rb.gravityScale = 0f;
