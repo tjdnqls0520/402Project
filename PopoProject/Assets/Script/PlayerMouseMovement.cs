@@ -1,36 +1,36 @@
-// ================================================
-// PlayerMouseMovement.cs (주석 버전)
-// - 플레이어의 마우스 / 키보드 입력 기반 점프, 대시, 포물선 이동 구현
-// - 크리스탈 아이템 기반 Boost(점프/대시) 시스템 포함
-// ================================================
-
 using System.Collections;
+using System.Runtime.InteropServices.ComTypes;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMouseMovement : MonoBehaviour
 {
-    // === 외부 설정 변수 ===
     public Rigidbody2D rb;
-    public AnimationCurve jumpArc; // 점프 포물선 궤적
-    public float maxHoldTime = 0.2f; // 비행 유지 최대 시간
-    public float maxDistance = 10f; // 비행 시 최대 거리
-    public float arcHeight = 20f; // 비행 시 Y축 궤적 최대치
-    public float dashSpeed = 12f; // 대시 속도
-    public float jumpHeight = 8f; // 점프 높이
-    public float jumpDuration = 0.2f; // 점프 지속 시간
-    public LayerMask groundLayer; // 바닥 판정용 레이어
+    public AnimationCurve jumpArc;
+    public float maxHoldTime = 0.2f;
+    public float maxDistance = 10f;
+    public float arcHeight = 20f;
+    public float dashSpeed = 12f;
+    public float jumpHeight = 8f;
+    public float jumpDuration = 0.2f;
+    public LayerMask groundLayer;
+    public LayerMask eventLayer;
+    public LayerMask onewayLayer;
+    public LayerMask trapLayer;
 
-    // === 내부 상태 ===
     private bool isFlying = false;
+    private bool isBoostFlying = false; // ★ Boost 비행 중인지
+    private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
+
     private Vector2 flyDirection;
     private Animator ani;
     private float holdStartTime;
     private bool leftFlying, rightFlying;
     private bool leftHeld, rightHeld;
     private float leftClickTime, rightClickTime;
-    private float doubleClickThreshold = 0.3f; // 더블클릭 허용 간격
+    private float doubleClickThreshold = 0.3f;
+    private float boostStartTime;
 
     private float dir = 1f;
     private float timer = 0;
@@ -40,13 +40,15 @@ public class PlayerMouseMovement : MonoBehaviour
     private bool isRepeatQueued = false;
     private bool spaceHeld = false;
     private bool doubleClickQueued = false;
-    private int queuedDirection = 0; // -1 = 왼쪽, 1 = 오른쪽
+    private bool isFallevent = false;
+    private int queuedDirection = 0;
     private enum InputDirection { None, Left, Right }
     private InputDirection lastClickDir = InputDirection.None;
     private float bothClickTime = 0f;
     private float bothClickThreshold = 0.1f;
-    private float fallCooldown = 0.2f; // 크리스탈 먹고 낙하 잠금 시간
+    private float fallCooldown = 0.2f;
     private float fallLockUntil = 0f;
+    private RaycastHit2D Hit;
 
 
     public enum BoostType { None, Dash, Jump }
@@ -54,7 +56,6 @@ public class PlayerMouseMovement : MonoBehaviour
 
     void Awake()
     {
-        // Rigidbody2D 연결
         rb = GetComponent<Rigidbody2D>();
         ani = GetComponent<Animator>();
     }
@@ -62,35 +63,30 @@ public class PlayerMouseMovement : MonoBehaviour
     void Update()
     {
         bool grounded = IsGrounded();
+        bool breaked = IsBreak();
+        bool wall = IsWalled();
+        RaycastHit2D breakHit = IsBreak();
         spaceHeld = Input.GetKey(KeyCode.Space);
 
-        // 입력 처리 (마우스 or 키보드)
         bool leftInputDown = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.A);
         bool rightInputDown = Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.S);
         bool leftInputHeld = Input.GetMouseButton(0) || Input.GetKey(KeyCode.A);
         bool rightInputHeld = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
+        bool anyMouseInput = Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
+
+        RaycastHit2D hit = IsBreak();
 
         leftHeld = leftInputHeld;
         rightHeld = rightInputHeld;
 
-        // 왼쪽 입력 더블클릭 시 Boost 발동
         if (leftInputDown)
         {
             dir = -1f;
             if (lastClickDir == InputDirection.Left && Time.time - leftClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
-                if (currentBoost == BoostType.Dash && !isDashing)
-                    StartCoroutine(PerformDash(-1));
-                else if (currentBoost == BoostType.Jump && !isJumping)
-                    StartCoroutine(PerformSmoothJump());
-
+                StartBoostFly(currentBoost, Vector2.left); // ★ Boost 비행 시작
                 currentBoost = BoostType.None;
                 lastClickDir = InputDirection.None;
-
-                ani.SetBool("spin", true);
-                ani.SetBool("double", false);
-                ani.SetBool("upspin", true);
-                ani.SetBool("up", false);
             }
             else
             {
@@ -104,18 +100,9 @@ public class PlayerMouseMovement : MonoBehaviour
             dir = 1f;
             if (lastClickDir == InputDirection.Right && Time.time - rightClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
-                if (currentBoost == BoostType.Dash && !isDashing)
-                    StartCoroutine(PerformDash(1));
-                else if (currentBoost == BoostType.Jump && !isJumping)
-                    StartCoroutine(PerformSmoothJump());
-
+                StartBoostFly(currentBoost, Vector2.right); // ★ Boost 비행 시작
                 currentBoost = BoostType.None;
                 lastClickDir = InputDirection.None;
-
-                ani.SetBool("spin", true);
-                ani.SetBool("double", false);
-                ani.SetBool("upspin", true);
-                ani.SetBool("up", false);
             }
             else
             {
@@ -124,39 +111,34 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
-        //점프 및 공격 모션 작동
         if (isFlying)
         {
             timer = 0;
             ani.SetBool("jump", true);
         }
-        else if(grounded && !leftInputHeld && !rightInputHeld)
+        else if ((grounded || breaked) && !leftInputHeld && !rightInputHeld)
         {
             timer += Time.deltaTime;
             ani.SetBool("jump", false);
             ani.SetBool("att", true);
-
             if (timer >= 0.35f)
-            {
                 ani.SetBool("att", false);
+        }
+
+        transform.localScale = new Vector3(dir, 1f, 1f);
+
+        if ((!grounded || !breaked) && Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && !isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
+        {
+            StartFall();
+            // 이벤트 타일 낙하 시 파괴
+            if (breakHit.collider != null && breakHit.collider.CompareTag("Breakable"))
+            {
+                Destroy(breakHit.collider.gameObject);
+                Debug.Log("낙하 중 이벤트 타일 파괴됨!");
             }
         }
 
-        //플레이어 크기설정
-        transform.localScale = new Vector3(dir, 1f, 1);
-
-        
-        // 공중에서 양쪽 입력 시 낙하
-        // 공중에서만 양쪽 입력으로 낙하 실행
-        if (!IsGrounded() && Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && !isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
-        {
-            StartFall();
-            ani.SetBool("spin", false);
-            ani.SetBool("upspin", false);
-        }
-
-        // 착지 상태에서 포물선 비행 시작
-        if (!isFlying && !isDashing && !isJumping && grounded)
+        if (!isFlying && !isDashing && !isJumping && (grounded || breaked) && !isBoostFlying)
         {
             if (leftHeld && !rightHeld)
             {
@@ -170,13 +152,39 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
-        // 입력 해제 시 비행 종료
         if (leftFlying && !leftHeld) EndFlying();
         if (rightFlying && !rightHeld) EndFlying();
+
+        if (isBoostFlying)
+        {
+            rb.gravityScale = 0f;
+            rb.linearVelocity = boostDirection;
+
+        }
+        if (isBoostFlying && anyMouseInput && Time.time - boostStartTime > 0.15f)
+        {
+            StopBoostFly();
+            Debug.Log("비행 중 마우스 입력으로 즉시 취소됨");
+        }
+        if (hit.collider != null && isFallevent == true)
+        {
+            Debug.Log("트리거 발동!");
+
+        }
+
+        if (breakHit.collider != null && breakHit.collider.CompareTag("Trap"))
+        {
+            Debug.Log("이벤트 타일(Trap)에 닿아 사망!");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        
+
     }
 
     void FixedUpdate()
     {
+        RaycastHit2D hit = IsBreak();
         if (isFlying)
         {
             float holdTime = Mathf.Clamp(Time.time - holdStartTime, 0f, maxHoldTime);
@@ -188,31 +196,34 @@ public class PlayerMouseMovement : MonoBehaviour
                 return;
             }
 
-            // 포물선 이동
             float x = flyDirection.x * Mathf.Lerp(2f, maxDistance, t);
             float y = jumpArc.Evaluate(t) * arcHeight;
             rb.linearVelocity = new Vector2(x, y);
         }
-        else if (!isDashing && !isJumping && IsGrounded())
+        else if (!isFlying && !isDashing && !isJumping && (IsGrounded() || IsBreak()))
         {
-            // 착지 상태 기본 이동 없음
-            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            if (!isBoostFlying)
+                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
-            // 다시 비행 조건 체크
-            if (leftHeld && !rightHeld && !isFlying)
+            if (leftHeld && !rightHeld && !isFlying && !isBoostFlying)
             {
                 StartFlying(Vector2.left);
                 leftFlying = true;
             }
-            else if (rightHeld && !leftHeld && !isFlying)
+            else if (rightHeld && !leftHeld && !isFlying && !isBoostFlying)
             {
                 StartFlying(Vector2.right);
                 rightFlying = true;
             }
         }
+
+        // ★ Boost 비행 중 → 바닥에 닿으면 종료
+        if (isBoostFlying && (IsGrounded() || IsBreak()))
+        {
+            StopBoostFly();
+        }
     }
 
-    // 포물선 이동 시작
     void StartFlying(Vector2 direction)
     {
         isFlying = true;
@@ -221,15 +232,13 @@ public class PlayerMouseMovement : MonoBehaviour
         rb.gravityScale = 0f;
     }
 
-    // 포물선 이동 종료
     void EndFlying()
     {
         isFlying = false;
         leftFlying = rightFlying = false;
         rb.gravityScale = 2f;
 
-        // 반복 비행 예약
-        if (IsGrounded() && !isJumping)
+        if ((IsGrounded() || IsBreak()) && !isJumping)
         {
             if (leftHeld && !rightHeld)
             {
@@ -244,11 +253,10 @@ public class PlayerMouseMovement : MonoBehaviour
         }
     }
 
-    // 다음 프레임에서 다시 비행 시작 (반복 입력 대응)
     IEnumerator ResumeFlying(Vector2 dir)
     {
         yield return null;
-        if (isRepeatQueued && IsGrounded() && !isFlying && !isJumping)
+        if (isRepeatQueued && (IsGrounded() || IsBreak()) && !isFlying && !isJumping)
         {
             StartFlying(dir);
             if (dir.x < 0) leftFlying = true;
@@ -257,117 +265,154 @@ public class PlayerMouseMovement : MonoBehaviour
         isRepeatQueued = false;
     }
 
-    // 낙하 시작
     void StartFall()
     {
+        isFallevent = true;
         isFlying = false;
         rb.gravityScale = 8.5f;
         rb.linearVelocity = Vector2.down * 20f;
+        isFallevent = false;
         Debug.Log("낙하");
-        
     }
 
-    // 대시 코루틴
-    IEnumerator PerformDash(int direction)
+    // ★ Boost 비행 시작 함수
+    void StartBoostFly(BoostType type, Vector2 direction)
     {
-        isDashing = true;
-        isDashing = false;
+        isBoostFlying = true;
+        boostStartTime = Time.time;
         rb.gravityScale = 0f;
+        if (type == BoostType.Dash)
+            boostDirection = direction.normalized * dashSpeed;
+        else if (type == BoostType.Jump)
+            boostDirection = Vector2.up * jumpHeight;
+    }
 
-        Vector2 startPos = rb.position;
-        Vector2 endPos = startPos + Vector2.right * direction * dashSpeed;
-        float duration = 0.2f;
-        float timer = 0f;
-
-        while (timer < duration)
-        {
-            float t = timer / duration;
-            Vector2 pos = Vector2.Lerp(startPos, endPos, t);
-            rb.MovePosition(pos);
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        rb.MovePosition(endPos);
+    // ★ Boost 비행 종료
+    void StopBoostFly()
+    {
+        bool leftInputDown = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.A);
+        bool rightInputDown = Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.S);
+        isBoostFlying = false;
+        rb.gravityScale = 2f;
         rb.linearVelocity = Vector2.zero;
 
-        // 체공 시간 (0.2초)
-        yield return new WaitForSeconds(0.2f);
-
-        rb.linearVelocity = Vector2.down * 2f;
-        rb.gravityScale = 2f;
-
+        StartCoroutine(DelayedGravityRestore(0.2f));
+        if (!isFlying && !isDashing && !isBoostFlying && !isJumping && !(IsGrounded() || IsBreak()))
+        {
+            if (leftInputDown)
+            {
+                StartFlying(Vector2.left);
+                leftFlying = true;
+            }
+            else if (rightInputDown)
+            {
+                StartFlying(Vector2.right);
+                rightFlying = true;
+            }
+        }
+        Debug.Log("Boost 비행 종료");
     }
 
-    // 점프 코루틴
-    IEnumerator PerformSmoothJump()
+    IEnumerator DelayedGravityRestore(float delay)
     {
-        isJumping = true;
-        isJumping = false;
         rb.gravityScale = 0f;
+        yield return new WaitForSeconds(delay);
+        rb.gravityScale = 2f;
+    }
 
-        Vector2 startPos = rb.position;
-        Vector2 endPos = startPos + Vector2.up * jumpHeight;
-        float timer = 0f;
-
-        while (timer < jumpDuration)
+    // ★ 벽 충돌 시 Boost 비행 강제 종료
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!collision.collider.CompareTag("OneWay"))
         {
-            float t = timer / jumpDuration;
-            Vector2 pos = Vector2.Lerp(startPos, endPos, t);
-            rb.MovePosition(pos);
-            timer += Time.deltaTime;
-            yield return null;
+            if ((isBoostFlying && collision.gameObject.layer == LayerMask.NameToLayer("Wall")) || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                StopBoostFly();
+                Debug.Log("벽에 부딪혀 Boost 정지!");
+            }
+        }
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Trap"))
+        {
+            Debug.Log("트랩 콜라이더와 충돌 - 사망!");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            return;
         }
 
-        rb.MovePosition(endPos);
-        rb.linearVelocity = Vector2.zero;
-
-        // 체공 시간 (0.2초)
-        yield return new WaitForSeconds(0.2f);
-
-        rb.linearVelocity = Vector2.down * 2f;
-        rb.gravityScale = 2f;
-
     }
 
-
-
-    // 크리스탈 효과 등록
     public void SetBoost(BoostType type)
     {
         currentBoost = type;
-
-        // 더블클릭 타이머 초기화
-  
-
     }
 
-    // 크리스탈 충돌 판정
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("CrystalDash"))
         {
             SetBoost(BoostType.Dash);
             other.gameObject.SetActive(false);
-            ani.SetBool("double", true);
-            ani.SetBool("up", false);
         }
         else if (other.CompareTag("CrystalJump"))
         {
             SetBoost(BoostType.Jump);
             other.gameObject.SetActive(false);
-            ani.SetBool("up", true);
-            ani.SetBool("double", false);
         }
     }
 
-    // 바닥 체크
+    public float GetDir()
+    {
+        return dir;
+    }
+
+    public void SetDir(float value)
+    {
+        dir = value;
+    }
+
     bool IsGrounded()
     {
+        if (isJumping || isDashing || isFlying || isBoostFlying)
+        {
+            return false; // 비행/점프/대시 중엔 무시
+        }
+
         float rayDistance = 1.3f;
         Vector2 origin = transform.position + Vector3.down * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, groundLayer);
         Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
+
+
+
         return hit.collider != null;
+    }
+
+    public RaycastHit2D IsBreak()
+    {
+        if (isJumping || isDashing || isFlying || isBoostFlying)
+        {
+            return new RaycastHit2D(); // 비행/점프/대시 중엔 무시
+        }
+        float rayDistance = 1.4f;
+        Vector2 origin = transform.position + Vector3.down * 0.2f;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, eventLayer);
+        Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
+
+        return hit;
+    }
+
+    bool IsWalled()
+    {
+
+        float rayDistance = 0.5f;
+        float rayDistancee = 0.5f;
+        Vector2 origin = transform.position + Vector3.right * 0.2f;
+        Vector2 originn = transform.position + Vector3.left * 0.2f;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, rayDistance, groundLayer);
+        RaycastHit2D hitt = Physics2D.Raycast(originn, Vector2.left, rayDistancee, groundLayer);
+        Debug.DrawRay(origin, Vector2.right * rayDistance, hit.collider ? Color.green : Color.red);
+        Debug.DrawRay(originn, Vector2.left * rayDistancee, hitt.collider ? Color.green : Color.red);
+
+
+        return hit.collider!= null;
     }
 }

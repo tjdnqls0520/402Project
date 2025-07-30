@@ -6,7 +6,7 @@ public class SmartCameraFollowByWall : MonoBehaviour
     public float followSpeed = 5f;
     public float rayDistance = 8f;
     public float raygroundDistance = 4f;
-    public float yOffset = 3f;              //추가: Y축 오프셋
+    public float yOffset = 3f;
     public LayerMask wallLayer;
     public LayerMask groundLayer;
 
@@ -20,20 +20,20 @@ public class SmartCameraFollowByWall : MonoBehaviour
 
         blockLeft = Physics2D.Raycast(cameraPos, Vector2.left, rayDistance, wallLayer);
         blockRight = Physics2D.Raycast(cameraPos, Vector2.right, rayDistance, wallLayer);
-        blockUp = Physics2D.Raycast(cameraPos, Vector2.up, raygroundDistance, groundLayer);
+
+        // 원웨이 타일은 감지에서 제외
+        RaycastHit2D hitUpRaw = Physics2D.Raycast(cameraPos, Vector2.up, raygroundDistance, groundLayer);
+        blockUp = hitUpRaw.collider != null && hitUpRaw.collider.tag != "OneWay";
 
         float targetX = cameraPos.x;
         float targetY = cameraPos.y;
 
-        // 좌우 이동
         if (!blockLeft && target.position.x < cameraPos.x)
             targetX = target.position.x;
         else if (!blockRight && target.position.x > cameraPos.x)
             targetX = target.position.x;
 
-        // 위쪽 제한 + 오프셋 적용
         float desiredY = target.position.y + yOffset;
-
         if (!blockUp && desiredY > cameraPos.y)
             targetY = desiredY;
         else if (desiredY < cameraPos.y)
@@ -56,7 +56,7 @@ public class SmartCameraFollowByWall : MonoBehaviour
         Gizmos.DrawLine(cameraPos, cameraPos + Vector3.right * rayDistance);
 
         RaycastHit2D hitUp = Physics2D.Raycast(cameraPos, Vector2.up, raygroundDistance, groundLayer);
-        Gizmos.color = hitUp.collider ? Color.blue : Color.red;
+        Gizmos.color = hitUp.collider && hitUp.collider.tag != "OneWay" ? Color.blue : Color.red;
         Gizmos.DrawLine(cameraPos, cameraPos + Vector3.up * raygroundDistance);
     }
 }
