@@ -89,6 +89,8 @@ public class PlayerMouseMovement : MonoBehaviour
 
                 ani.SetBool("spin", true);
                 ani.SetBool("double", false);
+                ani.SetBool("upspin", true);
+                ani.SetBool("up", false);
             }
             else
             {
@@ -112,6 +114,8 @@ public class PlayerMouseMovement : MonoBehaviour
 
                 ani.SetBool("spin", true);
                 ani.SetBool("double", false);
+                ani.SetBool("upspin", true);
+                ani.SetBool("up", false);
             }
             else
             {
@@ -148,6 +152,7 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             StartFall();
             ani.SetBool("spin", false);
+            ani.SetBool("upspin", false);
         }
 
         // 착지 상태에서 포물선 비행 시작
@@ -345,11 +350,14 @@ public class PlayerMouseMovement : MonoBehaviour
             SetBoost(BoostType.Dash);
             other.gameObject.SetActive(false);
             ani.SetBool("double", true);
+            ani.SetBool("up", false);
         }
         else if (other.CompareTag("CrystalJump"))
         {
             SetBoost(BoostType.Jump);
             other.gameObject.SetActive(false);
+            ani.SetBool("up", true);
+            ani.SetBool("double", false);
         }
     }
 
