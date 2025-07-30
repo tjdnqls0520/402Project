@@ -16,11 +16,12 @@ public class PlayerMouseMovement : MonoBehaviour
     public float jumpDuration = 0.2f;
     public float wallJumpForceX = 1f;
     public float wallJumpForceY = 1f;
+    public float rayLength = 0.6f;
     public LayerMask groundLayer;
     public LayerMask eventLayer;
     public LayerMask onewayLayer;
     public LayerMask trapLayer;
-
+    public float rayRadius = 0.1f; // ← 레이의 '두께'를 담당해요!
     public bool isFlying = false;
     private bool isBoostFlying = false; // ★ Boost 비행 중인지
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
@@ -51,6 +52,9 @@ public class PlayerMouseMovement : MonoBehaviour
     private float fallCooldown = 0.2f;
     private float fallLockUntil = 0f;
     private RaycastHit2D Hit;
+    private float wallStickY = 0f; // 고정할 Y값
+    private bool isWallJumping = false;
+    private float wallSltickY = float.NaN;
 
 
     public enum BoostType { None, Dash, Jump }
@@ -68,14 +72,18 @@ public class PlayerMouseMovement : MonoBehaviour
         bool breaked = IsBreak();
         bool wallleft = IsWalledLeft();
         bool wallright = IsWalledRight();
+        RaycastHit2D rightHit = CastDiagonalRayRight();
+        RaycastHit2D leftHit = CastDiagonalRayLeft();
         RaycastHit2D breakHit = IsBreak();
         spaceHeld = Input.GetKey(KeyCode.Space);
+
 
         bool leftInputDown = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.A);
         bool rightInputDown = Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.S);
         bool leftInputHeld = Input.GetMouseButton(0) || Input.GetKey(KeyCode.A);
         bool rightInputHeld = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
         bool anyMouseInput = Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
+
 
         RaycastHit2D hit = IsBreak();
 
@@ -181,44 +189,61 @@ public class PlayerMouseMovement : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
+        if (isWallJumping)
+        {
+            wallStickY = float.NaN;
+            isWallJumping = false;
+            return;
+        }
+
         if (IsWalledRight() && !IsGrounded())
         {
-            rb.linearVelocity = Vector2.zero; // 벽에 고정 (움직임 정지)
-            rb.gravityScale = 0f;
-            Debug.Log("파쿠르 준비");
-
-            if (rightInputDown)
+            if (leftInputDown)
             {
-                // 오른쪽 벽을 오르기 (x + 1, y + 1)
-                transform.position += new Vector3(1f, 1f, 0f);
-                rb.gravityScale = 1f;
+                isWallJumping = true;
+                StartFlying(Vector2.left);
+                return;
             }
-            else if (leftInputDown)
+
+            if (float.IsNaN(wallStickY))
+                wallStickY = transform.position.y;
+
+            rb.linearVelocity = Vector2.zero;
+            rb.position = new Vector2(rb.position.x, wallStickY);
+            transform.position = new Vector3(transform.position.x, wallStickY, transform.position.z);
+
+            if (rightInputDown && !rightHit.collider)
             {
-                // 왼쪽 방향으로 벽 점프
-                rb.linearVelocity = new Vector2(-wallJumpForceX, wallJumpForceY);
-                rb.gravityScale = 1f;
+                wallStickY = float.NaN;
+                transform.position += new Vector3(1f, 1f, 0f);
             }
         }
         else if (IsWalledLeft() && !IsGrounded())
         {
-            rb.linearVelocity = Vector2.zero; // 벽에 고정 (움직임 정지)
-
-            if (leftInputDown)
+            if (rightInputDown)
             {
-                // 왼쪽 벽을 오르기 (x - 1, y + 1)
-                transform.position += new Vector3(-1f, 1f, 0f);
-                rb.gravityScale = 1f;
+                isWallJumping = true;
+                StartFlying(Vector2.right);
+                return;
             }
-            else if (rightInputDown)
+
+            if (float.IsNaN(wallStickY))
+                wallStickY = transform.position.y;
+
+            rb.linearVelocity = Vector2.zero;
+            rb.position = new Vector2(rb.position.x, wallStickY);
+            transform.position = new Vector3(transform.position.x, wallStickY, transform.position.z);
+
+            if (leftInputDown && !leftHit.collider)
             {
-                // 오른쪽 방향으로 벽 점프
-                rb.linearVelocity = new Vector2(wallJumpForceX, wallJumpForceY);
-                rb.gravityScale = 1f;
+                wallStickY = float.NaN;
+                transform.position += new Vector3(-1f, 1f, 0f);
             }
         }
-
-
+        else
+        {
+            wallStickY = float.NaN;
+        }
     }
 
     void FixedUpdate()
@@ -419,9 +444,6 @@ public class PlayerMouseMovement : MonoBehaviour
         Vector2 origin = transform.position + Vector3.down * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, groundLayer);
         Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
-
-
-
         return hit.collider != null;
     }
 
@@ -454,5 +476,24 @@ public class PlayerMouseMovement : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(originn, Vector2.left, rayDistancee, groundLayer);
         Debug.DrawRay(originn, Vector2.left * rayDistancee, hit.collider ? Color.green : Color.red);
         return hit.collider != null;
+    }
+
+    public RaycastHit2D CastDiagonalRayRight()
+    {
+        Vector2 origin = (Vector2)transform.position + new Vector2(0f, 0.5f);
+        Vector2 direction = new Vector2(1.8f, 1f).normalized;
+
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, groundLayer);
+        Debug.DrawRay(origin, direction * rayLength, hit.collider ? Color.green : Color.red);
+        return hit;
+    }
+    public RaycastHit2D CastDiagonalRayLeft()
+    {
+        Vector2 origin = (Vector2)transform.position + new Vector2(0f, 0.5f);
+        Vector2 direction = new Vector2(-1.8f, 1f).normalized;
+
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, groundLayer);
+        Debug.DrawRay(origin, direction * rayLength, hit.collider ? Color.green : Color.red);
+        return hit;
     }
 }
