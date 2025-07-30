@@ -14,6 +14,8 @@ public class PlayerMouseMovement : MonoBehaviour
     public float dashSpeed = 12f;
     public float jumpHeight = 8f;
     public float jumpDuration = 0.2f;
+    public float wallJumpForceX = 1f;
+    public float wallJumpForceY = 1f;
     public LayerMask groundLayer;
     public LayerMask eventLayer;
     public LayerMask onewayLayer;
@@ -64,7 +66,8 @@ public class PlayerMouseMovement : MonoBehaviour
     {
         bool grounded = IsGrounded();
         bool breaked = IsBreak();
-        bool wall = IsWalled();
+        bool wallleft = IsWalledLeft();
+        bool wallright = IsWalledRight();
         RaycastHit2D breakHit = IsBreak();
         spaceHeld = Input.GetKey(KeyCode.Space);
 
@@ -178,7 +181,43 @@ public class PlayerMouseMovement : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        
+        if (IsWalledRight() && !IsGrounded())
+        {
+            rb.linearVelocity = Vector2.zero; // 벽에 고정 (움직임 정지)
+            rb.gravityScale = 0f;
+            Debug.Log("파쿠르 준비");
+
+            if (rightInputDown)
+            {
+                // 오른쪽 벽을 오르기 (x + 1, y + 1)
+                transform.position += new Vector3(1f, 1f, 0f);
+                rb.gravityScale = 1f;
+            }
+            else if (leftInputDown)
+            {
+                // 왼쪽 방향으로 벽 점프
+                rb.linearVelocity = new Vector2(-wallJumpForceX, wallJumpForceY);
+                rb.gravityScale = 1f;
+            }
+        }
+        else if (IsWalledLeft() && !IsGrounded())
+        {
+            rb.linearVelocity = Vector2.zero; // 벽에 고정 (움직임 정지)
+
+            if (leftInputDown)
+            {
+                // 왼쪽 벽을 오르기 (x - 1, y + 1)
+                transform.position += new Vector3(-1f, 1f, 0f);
+                rb.gravityScale = 1f;
+            }
+            else if (rightInputDown)
+            {
+                // 오른쪽 방향으로 벽 점프
+                rb.linearVelocity = new Vector2(wallJumpForceX, wallJumpForceY);
+                rb.gravityScale = 1f;
+            }
+        }
+
 
     }
 
@@ -400,19 +439,20 @@ public class PlayerMouseMovement : MonoBehaviour
         return hit;
     }
 
-    public bool IsWalled()
+    public bool IsWalledRight()
     {
-
         float rayDistance = 0.5f;
-        float rayDistancee = 0.5f;
         Vector2 origin = transform.position + Vector3.right * 0.2f;
-        Vector2 originn = transform.position + Vector3.left * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, rayDistance, groundLayer);
-        RaycastHit2D hitt = Physics2D.Raycast(originn, Vector2.left, rayDistancee, groundLayer);
         Debug.DrawRay(origin, Vector2.right * rayDistance, hit.collider ? Color.green : Color.red);
-        Debug.DrawRay(originn, Vector2.left * rayDistancee, hitt.collider ? Color.green : Color.red);
-
-
-        return hit.collider!= null;
+        return hit.collider != null;
+    }
+    public bool IsWalledLeft()
+    {
+        float rayDistancee = 0.5f;
+        Vector2 originn = transform.position + Vector3.left * 0.2f;
+        RaycastHit2D hit = Physics2D.Raycast(originn, Vector2.left, rayDistancee, groundLayer);
+        Debug.DrawRay(originn, Vector2.left * rayDistancee, hit.collider ? Color.green : Color.red);
+        return hit.collider != null;
     }
 }
