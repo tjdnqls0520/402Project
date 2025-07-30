@@ -56,6 +56,9 @@ public class PlayerMouseMovement : MonoBehaviour
     private float wallStickY = 0f; // 고정할 Y값
     private bool isWallJumping = false;
     private float wallSltickY = float.NaN;
+    private bool wasJumping = false; // 점프 중이었는지 기억하는 변수
+    private bool isLanding = false;
+
 
 
     public enum BoostType { None, Dash, Jump }
@@ -77,6 +80,8 @@ public class PlayerMouseMovement : MonoBehaviour
         RaycastHit2D leftHit = CastDiagonalRayLeft();
         RaycastHit2D breakHit = IsBreak();
         spaceHeld = Input.GetKey(KeyCode.Space);
+        bool groundedNow = IsGrounded() || IsBreak();
+        bool noInput = !leftHeld && !rightHeld && !spaceHeld;
 
 
         bool leftInputDown = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.A);
@@ -151,7 +156,7 @@ public class PlayerMouseMovement : MonoBehaviour
         }
 
         if (leftFlying && !leftHeld) EndFlying();
-        if (rightFlying && !rightHeld) EndFlying();
+        if (rightFlying && !rightHeld) EndFlying(); 
 
         if (isBoostFlying)
         {
@@ -231,6 +236,11 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             wallStickY = float.NaN;
         }
+
+   
+ 
+
+
     }
 
     void FixedUpdate()
@@ -253,6 +263,7 @@ public class PlayerMouseMovement : MonoBehaviour
         }
         else if (!isFlying && !isDashing && !isJumping && (IsGrounded() || IsBreak()))
         {
+            
             if (!isBoostFlying)
                 rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
@@ -273,6 +284,8 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             StopBoostFly();
         }
+
+        
     }
 
     void StartFlying(Vector2 direction)
@@ -302,6 +315,7 @@ public class PlayerMouseMovement : MonoBehaviour
                 StartCoroutine(ResumeFlying(Vector2.right));
             }
         }
+        
     }
 
     IEnumerator ResumeFlying(Vector2 dir)
@@ -309,6 +323,7 @@ public class PlayerMouseMovement : MonoBehaviour
         yield return null;
         if (isRepeatQueued && (IsGrounded() || IsBreak()) && !isFlying && !isJumping)
         {
+
             StartFlying(dir);
             if (dir.x < 0) leftFlying = true;
             else rightFlying = true;
@@ -342,6 +357,7 @@ public class PlayerMouseMovement : MonoBehaviour
     // ★ Boost 비행 종료
     void StopBoostFly()
     {
+        
         bool leftInputDown = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.A);
         bool rightInputDown = Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.S);
         isBoostFlying = false;
