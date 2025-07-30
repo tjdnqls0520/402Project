@@ -86,6 +86,9 @@ public class PlayerMouseMovement : MonoBehaviour
 
                 currentBoost = BoostType.None;
                 lastClickDir = InputDirection.None;
+
+                ani.SetBool("spin", true);
+                ani.SetBool("double", false);
             }
             else
             {
@@ -106,6 +109,9 @@ public class PlayerMouseMovement : MonoBehaviour
 
                 currentBoost = BoostType.None;
                 lastClickDir = InputDirection.None;
+
+                ani.SetBool("spin", true);
+                ani.SetBool("double", false);
             }
             else
             {
@@ -114,6 +120,7 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
+        //점프 및 공격 모션 작동
         if (isFlying)
         {
             timer = 0;
@@ -131,6 +138,7 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
+        //플레이어 크기설정
         transform.localScale = new Vector3(dir, 1f, 1);
 
         
@@ -139,6 +147,7 @@ public class PlayerMouseMovement : MonoBehaviour
         if (!IsGrounded() && Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && !isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
         {
             StartFall();
+            ani.SetBool("spin", false);
         }
 
         // 착지 상태에서 포물선 비행 시작
@@ -282,7 +291,7 @@ public class PlayerMouseMovement : MonoBehaviour
 
         rb.linearVelocity = Vector2.down * 2f;
         rb.gravityScale = 2f;
-        
+
     }
 
     // 점프 코루틴
@@ -335,6 +344,7 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             SetBoost(BoostType.Dash);
             other.gameObject.SetActive(false);
+            ani.SetBool("double", true);
         }
         else if (other.CompareTag("CrystalJump"))
         {
