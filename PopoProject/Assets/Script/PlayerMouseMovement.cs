@@ -19,7 +19,7 @@ public class PlayerMouseMovement : MonoBehaviour
     public LayerMask onewayLayer;
     public LayerMask trapLayer;
 
-    private bool isFlying = false;
+    public bool isFlying = false;
     private bool isBoostFlying = false; // ★ Boost 비행 중인지
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
 
@@ -369,7 +369,7 @@ public class PlayerMouseMovement : MonoBehaviour
         dir = value;
     }
 
-    bool IsGrounded()
+    public bool IsGrounded()
     {
         if (isJumping || isDashing || isFlying || isBoostFlying)
         {
@@ -400,7 +400,7 @@ public class PlayerMouseMovement : MonoBehaviour
         return hit;
     }
 
-    bool IsWalled()
+    public bool IsWalled()
     {
 
         float rayDistance = 0.5f;
