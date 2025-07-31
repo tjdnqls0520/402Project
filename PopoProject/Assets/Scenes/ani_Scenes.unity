@@ -147,7 +147,7 @@ GameObject:
   m_Component:
   - component: {fileID: 513773390}
   - component: {fileID: 513773391}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Grid (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,11 +204,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5870692791564538260, guid: febaa0cf0e53b2c4fb77a9ab16756976, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.93
+      value: 3.78
       objectReference: {fileID: 0}
     - target: {fileID: 5870692791564538260, guid: febaa0cf0e53b2c4fb77a9ab16756976, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.79
+      value: -1.62
       objectReference: {fileID: 0}
     - target: {fileID: 5870692791564538260, guid: febaa0cf0e53b2c4fb77a9ab16756976, type: 3}
       propertyPath: m_LocalPosition.z
@@ -415,11 +415,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7621091454834674283, guid: 506a906607cf1ce428210d0464fafe66, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.5
+      value: -2.75
       objectReference: {fileID: 0}
     - target: {fileID: 7621091454834674283, guid: 506a906607cf1ce428210d0464fafe66, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.44
+      value: -1.6
       objectReference: {fileID: 0}
     - target: {fileID: 7621091454834674283, guid: 506a906607cf1ce428210d0464fafe66, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1626,13 +1626,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7627747114501804357, guid: 47b66fdcd02e46f4aa24c31378f1906c, type: 3}
+      propertyPath: isBoostFlying
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7828552308514849575, guid: 47b66fdcd02e46f4aa24c31378f1906c, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 7828552308514849575, guid: 47b66fdcd02e46f4aa24c31378f1906c, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
