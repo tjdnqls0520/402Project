@@ -54,6 +54,7 @@ public class PlayerMouseMovement : MonoBehaviour
     private bool doubleClickQueued = false;
     private bool isFallevent = false;
     private int queuedDirection = 0;
+
     private enum InputDirection { None, Left, Right }
     private InputDirection lastClickDir = InputDirection.None;
     private float bothClickTime = 0f;
@@ -91,6 +92,7 @@ public class PlayerMouseMovement : MonoBehaviour
         spaceHeld = Input.GetKey(KeyCode.Space);
         bool groundedNow = IsGrounded() || IsBreak();
         bool noInput = !leftHeld && !rightHeld && !spaceHeld;
+        IsGrounded();
 
 
         bool leftInputDown = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.A);
@@ -499,10 +501,22 @@ public class PlayerMouseMovement : MonoBehaviour
             return false; // 비행/점프/대시 중엔 무시
         }
 
-        float rayDistance = groundrayDistance;
-        Vector2 origin = transform.position + Vector3.down * 0.2f;
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, groundLayer);
-        Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
+        float radius = 0.2f;
+        float distance = 1.3f;
+        Vector2 origin = (Vector2)transform.position + Vector2.down * 0.2f;
+
+        RaycastHit2D hit = Physics2D.CircleCast(origin, radius, Vector2.down, distance, groundLayer);
+
+        Debug.DrawLine(origin + Vector2.left * radius, origin + Vector2.right * radius, Color.yellow);
+        Debug.DrawLine(origin + Vector2.up * radius, origin + Vector2.down * radius, Color.yellow);
+
+        Debug.DrawRay(origin, Vector2.down * distance, Color.cyan);
+
+        if (hit.collider != null && hit.collider.CompareTag("OneWay"))
+        {
+            return false;
+        }
+
         return hit.collider != null;
     }
 
