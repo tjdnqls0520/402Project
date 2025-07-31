@@ -13,6 +13,7 @@ TagManager:
   - Breakable
   - BounceLeftUp
   - BounceRightUp
+  - SensorTrap
   layers:
   - Default
   - TransparentFX
