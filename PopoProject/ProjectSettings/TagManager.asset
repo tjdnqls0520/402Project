@@ -11,6 +11,8 @@ TagManager:
   - Trap
   - OneWay
   - Breakable
+  - BounceLeftUp
+  - BounceRightUp
   layers:
   - Default
   - TransparentFX
