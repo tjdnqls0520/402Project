@@ -16,7 +16,7 @@ public class PlayerMouseMovement : MonoBehaviour
     public float jumpDuration = 0.2f;
     public float wallJumpForceX = 1f;
     public float wallJumpForceY = 1f;
-    public float rayLength = 0.6f;
+    public float rayLength = 0.8f;
     public LayerMask groundLayer;
     public LayerMask eventLayer;
     public LayerMask onewayLayer;
@@ -27,6 +27,12 @@ public class PlayerMouseMovement : MonoBehaviour
     public bool isBoostFlying = false; // ★ Boost 비행 중인지
     public bool dash = false;
     public bool jump = false;
+    public bool dirseto = true;
+    public float dirsetofl = 1f;
+    public float groundrayDistance = 1.3f;
+    public float breakrayDistance = 1.4f;
+    public float WallrayDistance = 0.5f;
+    public float raytrens = 0.7f;
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
 
     private Vector2 flyDirection;
@@ -60,6 +66,7 @@ public class PlayerMouseMovement : MonoBehaviour
     private float wallSltickY = float.NaN;
     private bool wasJumping = false; // 점프 중이었는지 기억하는 변수
     private bool isLanding = false;
+    
 
 
 
@@ -92,6 +99,31 @@ public class PlayerMouseMovement : MonoBehaviour
         bool rightInputHeld = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
         bool anyMouseInput = Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
 
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            dirseto = true;
+            dir = 1f;
+            dirsetofl = 1f;
+            groundrayDistance = 1.3f;
+            breakrayDistance = 1.4f;
+            WallrayDistance = 0.5f;
+            raytrens = 0.7f;
+            rayLength = 0.8f;
+
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            dirseto = false;
+            dirsetofl = 0.5f;
+            dir = 0.5f;
+            groundrayDistance = 0.55f;
+            breakrayDistance = 0.6f;
+            WallrayDistance = 0.25f;
+            raytrens = 0.35f;
+            rayLength = 0.4f;
+        }
+
+
 
         RaycastHit2D hit = IsBreak();
 
@@ -100,7 +132,10 @@ public class PlayerMouseMovement : MonoBehaviour
 
         if (leftInputDown)
         {
-            dir = -1f;
+            if(dirseto == true) dir = -1f;
+            else if (dirseto == false) dir = -0.5f;
+
+
             if (lastClickDir == InputDirection.Left && Time.time - leftClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
                 StartBoostFly(currentBoost, Vector2.left); // ★ Boost 비행 시작
@@ -116,7 +151,9 @@ public class PlayerMouseMovement : MonoBehaviour
 
         if (rightInputDown)
         {
-            dir = 1f;
+            if (dirseto == true) dir = 1f;
+            else if (dirseto == false) dir = 0.5f;
+
             if (lastClickDir == InputDirection.Right && Time.time - rightClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
                 StartBoostFly(currentBoost, Vector2.right); // ★ Boost 비행 시작
@@ -130,7 +167,7 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
-        transform.localScale = new Vector3(dir, 1f, 1f);
+        transform.localScale = new Vector3(dir, dirsetofl, dirsetofl);
 
         if ((!grounded || !breaked) && Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && !isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
         {
@@ -462,7 +499,7 @@ public class PlayerMouseMovement : MonoBehaviour
             return false; // 비행/점프/대시 중엔 무시
         }
 
-        float rayDistance = 1.3f;
+        float rayDistance = groundrayDistance;
         Vector2 origin = transform.position + Vector3.down * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, groundLayer);
         Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
@@ -475,7 +512,7 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             return new RaycastHit2D(); // 비행/점프/대시 중엔 무시
         }
-        float rayDistance = 1.4f;
+        float rayDistance = breakrayDistance;
         Vector2 origin = transform.position + Vector3.down * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, eventLayer);
 
@@ -493,7 +530,7 @@ public class PlayerMouseMovement : MonoBehaviour
             return false; // 비행/점프/대시 중엔 무시
         }
 
-        float rayDistance = 0.5f;
+        float rayDistance = WallrayDistance;
         Vector2 origin = transform.position + Vector3.right * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, rayDistance, groundLayer);
 
@@ -513,7 +550,7 @@ public class PlayerMouseMovement : MonoBehaviour
             return false; // 비행/점프/대시 중엔 무시
         }
 
-        float rayDistancee = 0.5f;
+        float rayDistancee = WallrayDistance;
         Vector2 originn = transform.position + Vector3.left * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(originn, Vector2.left, rayDistancee, groundLayer);
 
@@ -529,7 +566,7 @@ public class PlayerMouseMovement : MonoBehaviour
 
     public RaycastHit2D CastDiagonalRayRight()
     {
-        Vector2 origin = (Vector2)transform.position + new Vector2(0f, 0.5f);
+        Vector2 origin = (Vector2)transform.position + new Vector2(0f, raytrens);
         Vector2 direction = new Vector2(1.8f, 1f).normalized;
 
         RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, groundLayer);
@@ -545,7 +582,7 @@ public class PlayerMouseMovement : MonoBehaviour
     }
     public RaycastHit2D CastDiagonalRayLeft()
     {
-        Vector2 origin = (Vector2)transform.position + new Vector2(0f, 0.5f);
+        Vector2 origin = (Vector2)transform.position + new Vector2(0f, raytrens);
         Vector2 direction = new Vector2(-1.8f, 1f).normalized;
 
         RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, groundLayer);

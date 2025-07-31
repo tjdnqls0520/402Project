@@ -3,7 +3,7 @@ using UnityEngine;
 public class SmartCameraFollowByWall : MonoBehaviour
 {
     public Transform target;
-    public float followSpeed = 5f;
+    public float followSpeed = 10f;
     public float rayDistance = 8f;
     public float raygroundDistance = 4f;
     public float yOffset = 3f;
@@ -39,7 +39,7 @@ public class SmartCameraFollowByWall : MonoBehaviour
         else if (desiredY < cameraPos.y)
             targetY = desiredY;
 
-        Vector3 desiredPosition = new Vector3(targetX, targetY - 2f, cameraPos.z);
+        Vector3 desiredPosition = new Vector3(targetX, targetY, cameraPos.z);
         transform.position = Vector3.SmoothDamp(cameraPos, desiredPosition, ref currentVelocity, 1f / followSpeed);
     }
 
