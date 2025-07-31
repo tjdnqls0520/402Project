@@ -391,11 +391,13 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             boostDirection = direction.normalized * dashSpeed;
             dash = true;
+            jump = false;
         }
         else if (type == BoostType.Jump)
         {
             boostDirection = Vector2.up * jumpHeight;
             jump = true;
+            dash = false;
         }
     }
 
@@ -480,13 +482,11 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             SetBoost(BoostType.Dash);
             other.gameObject.SetActive(false);
-            dash = true;
         }
         else if (other.CompareTag("CrystalJump"))
         {
             SetBoost(BoostType.Jump);
             other.gameObject.SetActive(false);
-            jump = true;
         }
     }
 

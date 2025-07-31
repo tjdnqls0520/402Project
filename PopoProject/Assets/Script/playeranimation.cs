@@ -59,11 +59,15 @@ public class playeranimation : MonoBehaviour
             if(pl.GetComponent<PlayerMouseMovement>().dash  == true)
             {
                 ani.SetBool("spin", true);
+                ani.SetBool("double", true);
+                ani.SetBool("up", false);
                 ani.SetBool("upspining", false);
             }
             else if(pl.GetComponent<PlayerMouseMovement>().jump == true)
             {
                 ani.SetBool("upspining", true);
+                ani.SetBool("double", false);
+                ani.SetBool("up", true);
                 ani.SetBool("spin", false);
             }
             
@@ -74,25 +78,25 @@ public class playeranimation : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("CrystalDash"))
-        {
-            if (!pl.GetComponent<PlayerMouseMovement>().jump || (!pl.GetComponent<PlayerMouseMovement>().jump && pl.GetComponent<PlayerMouseMovement>().dash))
-            {
-                ani.SetBool("upspining", false);
-                ani.SetBool("double", true);
-                ani.SetBool("up", false);
-            }
+        //if (other.CompareTag("CrystalDash"))
+        //{
+        //    if (!pl.GetComponent<PlayerMouseMovement>().jump || (!pl.GetComponent<PlayerMouseMovement>().jump && pl.GetComponent<PlayerMouseMovement>().dash))
+        //    {
+        //        ani.SetBool("upspining", false);
+        //        ani.SetBool("double", true);
+        //        ani.SetBool("up", false);
+        //    }
             
-        }
-        else if (other.CompareTag("CrystalJump"))
-        {
-            if (!pl.GetComponent<PlayerMouseMovement>().dash || (!pl.GetComponent<PlayerMouseMovement>().dash && pl.GetComponent<PlayerMouseMovement>().jump))
-            {
-                ani.SetBool("spin", false);
-                ani.SetBool("up", true);
-                ani.SetBool("double", false);
-            }
+        //}
+        //else if (other.CompareTag("CrystalJump"))
+        //{
+        //    if (!pl.GetComponent<PlayerMouseMovement>().dash || (!pl.GetComponent<PlayerMouseMovement>().dash && pl.GetComponent<PlayerMouseMovement>().jump))
+        //    {
+        //        ani.SetBool("spin", false);
+        //        ani.SetBool("up", true);
+        //        ani.SetBool("double", false);
+        //    }
            
-        }
+        //}
     }
 }
