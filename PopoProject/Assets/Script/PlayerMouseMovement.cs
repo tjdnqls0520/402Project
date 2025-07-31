@@ -460,6 +460,9 @@ public class PlayerMouseMovement : MonoBehaviour
         float rayDistance = 1.4f;
         Vector2 origin = transform.position + Vector3.down * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, eventLayer);
+
+
+
         Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
 
         return hit;
@@ -467,17 +470,41 @@ public class PlayerMouseMovement : MonoBehaviour
 
     public bool IsWalledRight()
     {
+        if (isJumping || isDashing || isFlying || isBoostFlying)
+        {
+            return false; // 비행/점프/대시 중엔 무시
+        }
+
         float rayDistance = 0.5f;
         Vector2 origin = transform.position + Vector3.right * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, rayDistance, groundLayer);
+
+        // 원웨이 플랫폼 무시 처리 (태그 기반)
+        if (hit.collider != null && hit.collider.CompareTag("OneWay"))
+        {
+            return new RaycastHit2D(); // 무시
+        }
+
         Debug.DrawRay(origin, Vector2.right * rayDistance, hit.collider ? Color.green : Color.red);
         return hit.collider != null;
     }
     public bool IsWalledLeft()
     {
+        if (isJumping || isDashing || isFlying || isBoostFlying)
+        {
+            return false; // 비행/점프/대시 중엔 무시
+        }
+
         float rayDistancee = 0.5f;
         Vector2 originn = transform.position + Vector3.left * 0.2f;
         RaycastHit2D hit = Physics2D.Raycast(originn, Vector2.left, rayDistancee, groundLayer);
+
+        // 원웨이 플랫폼 무시 처리 (태그 기반)
+        if (hit.collider != null && hit.collider.CompareTag("OneWay"))
+        {
+            return new RaycastHit2D(); // 무시
+        }
+
         Debug.DrawRay(originn, Vector2.left * rayDistancee, hit.collider ? Color.green : Color.red);
         return hit.collider != null;
     }
@@ -488,6 +515,13 @@ public class PlayerMouseMovement : MonoBehaviour
         Vector2 direction = new Vector2(1.8f, 1f).normalized;
 
         RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, groundLayer);
+
+        // 원웨이 플랫폼 무시 처리 (태그 기반)
+        if (hit.collider != null && hit.collider.CompareTag("OneWay"))
+        {
+            return new RaycastHit2D(); // 무시
+        }
+
         Debug.DrawRay(origin, direction * rayLength, hit.collider ? Color.green : Color.red);
         return hit;
     }
@@ -497,6 +531,13 @@ public class PlayerMouseMovement : MonoBehaviour
         Vector2 direction = new Vector2(-1.8f, 1f).normalized;
 
         RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, groundLayer);
+
+        // 원웨이 플랫폼 무시 처리 (태그 기반)
+        if (hit.collider != null && hit.collider.CompareTag("OneWay"))
+        {
+            return new RaycastHit2D(); // 무시
+        }
+
         Debug.DrawRay(origin, direction * rayLength, hit.collider ? Color.green : Color.red);
         return hit;
     }
