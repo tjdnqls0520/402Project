@@ -25,6 +25,8 @@ public class PlayerMouseMovement : MonoBehaviour
     public bool isFlying = false;
     public bool getskill = false;
     public bool isBoostFlying = false; // ★ Boost 비행 중인지
+    public bool dash = false;
+    public bool jump = false;
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
 
     private Vector2 flyDirection;

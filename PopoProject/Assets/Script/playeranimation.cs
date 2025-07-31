@@ -50,8 +50,8 @@ public class playeranimation : MonoBehaviour
 
         if (pl.GetComponent<PlayerMouseMovement>().isBoostFlying == true)
         {
-            ani.SetBool("spin", true);
-            ani.SetBool("upspining", true);
+            
+                
         }
 
 
