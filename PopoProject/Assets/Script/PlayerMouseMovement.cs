@@ -390,9 +390,17 @@ public class PlayerMouseMovement : MonoBehaviour
         boostStartTime = Time.time;
         rb.gravityScale = 0f;
         if (type == BoostType.Dash)
+        {
             boostDirection = direction.normalized * dashSpeed;
+            dash = true;
+            jump = false;
+        }
         else if (type == BoostType.Jump)
+        {
             boostDirection = Vector2.up * jumpHeight;
+            jump = true;
+            dash = false;
+        }
     }
 
     // ★ Boost 비행 종료
