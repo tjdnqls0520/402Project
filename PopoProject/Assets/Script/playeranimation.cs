@@ -78,25 +78,15 @@ public class playeranimation : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        //if (other.CompareTag("CrystalDash"))
-        //{
-        //    if (!pl.GetComponent<PlayerMouseMovement>().jump || (!pl.GetComponent<PlayerMouseMovement>().jump && pl.GetComponent<PlayerMouseMovement>().dash))
-        //    {
-        //        ani.SetBool("upspining", false);
-        //        ani.SetBool("double", true);
-        //        ani.SetBool("up", false);
-        //    }
-            
-        //}
-        //else if (other.CompareTag("CrystalJump"))
-        //{
-        //    if (!pl.GetComponent<PlayerMouseMovement>().dash || (!pl.GetComponent<PlayerMouseMovement>().dash && pl.GetComponent<PlayerMouseMovement>().jump))
-        //    {
-        //        ani.SetBool("spin", false);
-        //        ani.SetBool("up", true);
-        //        ani.SetBool("double", false);
-        //    }
-           
-        //}
+        if (other.CompareTag("CrystalDash"))
+        {
+            ani.SetBool("double", true);
+        }
+        else if (other.CompareTag("CrystalJump"))
+        {
+            ani.SetBool("up", true);
+        }
     }
+
+
 }
