@@ -351,9 +351,15 @@ public class PlayerMouseMovement : MonoBehaviour
         boostStartTime = Time.time;
         rb.gravityScale = 0f;
         if (type == BoostType.Dash)
+        {
             boostDirection = direction.normalized * dashSpeed;
+            dash = true;
+        }
         else if (type == BoostType.Jump)
+        {
             boostDirection = Vector2.up * jumpHeight;
+            jump = true;
+        }
     }
 
     // ★ Boost 비행 종료
@@ -437,11 +443,13 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             SetBoost(BoostType.Dash);
             other.gameObject.SetActive(false);
+            dash = true;
         }
         else if (other.CompareTag("CrystalJump"))
         {
             SetBoost(BoostType.Jump);
             other.gameObject.SetActive(false);
+            jump = true;
         }
     }
 
