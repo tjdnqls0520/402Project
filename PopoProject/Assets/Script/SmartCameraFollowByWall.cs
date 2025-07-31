@@ -39,7 +39,7 @@ public class SmartCameraFollowByWall : MonoBehaviour
         else if (desiredY < cameraPos.y)
             targetY = desiredY;
 
-        Vector3 desiredPosition = new Vector3(targetX, targetY, cameraPos.z);
+        Vector3 desiredPosition = new Vector3(targetX, targetY - 2f, cameraPos.z);
         transform.position = Vector3.SmoothDamp(cameraPos, desiredPosition, ref currentVelocity, 1f / followSpeed);
     }
 
