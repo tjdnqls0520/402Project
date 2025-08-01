@@ -42,11 +42,13 @@ public class playeranimation : MonoBehaviour
             {
                 ani.SetBool("double", false);
                 ani.SetBool("spin", false);
+                pl.GetComponent<PlayerMouseMovement>().dash = false;
             }
             else if (pl.GetComponent<PlayerMouseMovement>().jump)
             {
-                 ani.SetBool("up", false);
-                 ani.SetBool("upspining", false);
+                ani.SetBool("up", false);
+                ani.SetBool("upspining", false);
+                pl.GetComponent<PlayerMouseMovement>().jump = false;
             }
 
                
