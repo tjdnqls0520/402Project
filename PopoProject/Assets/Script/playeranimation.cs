@@ -36,23 +36,25 @@ public class playeranimation : MonoBehaviour
                 ani.SetBool("att", false);
         }
 
-        if( pl.GetComponent<PlayerMouseMovement>().getskill == true && pl.GetComponent<PlayerMouseMovement>().isBoostFlying == false)
+        if( pl.GetComponent<PlayerMouseMovement>().getskill == true && (pl.GetComponent<PlayerMouseMovement>().isBoostFlying == false || pl.GetComponent<PlayerMouseMovement>().IsGrounded()))
         {
-            if (pl.GetComponent<PlayerMouseMovement>().dash == true)
+            if (pl.GetComponent<PlayerMouseMovement>().dash)
             {
                 ani.SetBool("double", false);
                 ani.SetBool("spin", false);
             }
-            else if (pl.GetComponent<PlayerMouseMovement>().jump == true)
+            else if (pl.GetComponent<PlayerMouseMovement>().jump)
             {
-                ani.SetBool("up", false);
-                ani.SetBool("upspining", false);
+                 ani.SetBool("up", false);
+                 ani.SetBool("upspining", false);
             }
+
+               
+          
             pl.GetComponent<PlayerMouseMovement>().getskill = false;
         }
 
-        
-        
+       
 
         if (pl.GetComponent<PlayerMouseMovement>().isBoostFlying == true)
         {
@@ -62,7 +64,6 @@ public class playeranimation : MonoBehaviour
                 ani.SetBool("double", true);
                 ani.SetBool("up", false);
                 ani.SetBool("upspining", false);
-                pl.GetComponent<PlayerMouseMovement>().dash = false;
             }
             else if(pl.GetComponent<PlayerMouseMovement>().jump == true)
             {
@@ -70,7 +71,6 @@ public class playeranimation : MonoBehaviour
                 ani.SetBool("double", false);
                 ani.SetBool("up", true);
                 ani.SetBool("spin", false);
-                pl.GetComponent<PlayerMouseMovement>().jump = false;
             }
             
         }
