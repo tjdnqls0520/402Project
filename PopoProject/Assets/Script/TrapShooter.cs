@@ -2,39 +2,61 @@ using UnityEngine;
 
 public class TrapShooter : MonoBehaviour
 {
-    public GameObject projectilePrefab;
-    public float fireInterval = 1.5f;
-    public float projectileSpeed = 5f;
+    public GameObject draggingBulletPrefab;
+    public GameObject trapBulletPrefab;
+    public GameObject homingBulletPrefab;
 
-    public bool up, down, left, right;
+    public enum BulletType { Dragging, Trap, Homing }
+    public BulletType currentBulletType = BulletType.Trap;
 
-    private float timer = 0f;
+    public float interval = 1f;
+    public float speed = 5f;
+    public Vector2 direction = Vector2.left;
+
+    private float timer;
 
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer >= fireInterval)
+        if (timer >= interval)
         {
             timer = 0f;
-            FireProjectile();
+            Shoot();
         }
     }
 
-    void FireProjectile()
+    void Shoot()
     {
-        Vector2 direction = Vector2.zero;
+        GameObject bullet = null;
 
-        if (up) direction += Vector2.up;
-        if (down) direction += Vector2.down;
-        if (left) direction += Vector2.left;
-        if (right) direction += Vector2.right;
+        switch (currentBulletType)
+        {
+            case BulletType.Dragging:
+                bullet = Instantiate(draggingBulletPrefab, transform.position, Quaternion.identity);
+                var drag = bullet.GetComponent<DraggingBullet>();
+                if (drag != null)
+                    drag.Launch(direction, speed);
+                else
+                    Debug.LogWarning("DraggingBullet 스크립트 없음!");
+                break;
 
-        if (direction == Vector2.zero) return;
+            case BulletType.Trap:
+                bullet = Instantiate(trapBulletPrefab, transform.position, Quaternion.identity);
+                var trap = bullet.GetComponent<TrapProjectile>();
+                if (trap != null)
+                    trap.Launch(direction, speed);
+                else
+                    Debug.LogWarning("TrapProjectile 스크립트 없음!");
+                break;
 
-        direction.Normalize();
-
-        GameObject proj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-        TrapProjectile trap = proj.GetComponent<TrapProjectile>();
-        trap.Launch(direction, projectileSpeed); // ← 이거 안 하면 절대 안 날아감
+            case BulletType.Homing:
+                bullet = Instantiate(homingBulletPrefab, transform.position, Quaternion.identity);
+                var homing = bullet.GetComponent<HomingBullet>();
+                if (homing != null)
+                    homing.Launch(direction, speed); // 방향 넘기기!!
+                else
+                    Debug.LogWarning("HomingBullet 스크립트 없음!");
+                break;
+        }
     }
 }

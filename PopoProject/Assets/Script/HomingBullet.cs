@@ -6,29 +6,16 @@ public class HomingBullet : MonoBehaviour
     public float speed = 5f;
     public float rotateSpeed = 200f;
     public float lifeTime = 10f;
-
     public LayerMask wallLayer;
-    public LayerMask groundLayer;
-    public LayerMask eventLayer;
 
-    private Rigidbody2D rb;
     private Transform target;
-
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
+    private Rigidbody2D rb;
+    private Vector2 initialDirection = Vector2.right;
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         target = GameObject.FindGameObjectWithTag("Player")?.transform;
-
-        if (target == null)
-        {
-            Debug.LogWarning("유도탄: 타겟이 없습니다!");
-            Destroy(gameObject);
-        }
-
         Destroy(gameObject, lifeTime);
     }
 
@@ -36,27 +23,31 @@ public class HomingBullet : MonoBehaviour
     {
         if (target == null) return;
 
-        Vector2 direction = (target.position - transform.position).normalized;
-        rb.linearVelocity = direction * speed;
+        Vector2 direction = ((Vector2)target.position - rb.position).normalized;
+        float rotateAmount = Vector3.Cross(direction, transform.right).z;
+
+        rb.angularVelocity = -rotateAmount * rotateSpeed;
+        rb.linearVelocity = transform.right * speed;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        int layer = collision.gameObject.layer;
-
-        bool hitWall = ((1 << layer) & wallLayer) != 0;
-        bool hitGround = ((1 << layer) & groundLayer) != 0;
-        bool hitEvent = ((1 << layer) & eventLayer) != 0;
-
-        if (hitWall || hitGround || hitEvent)
+        if (((1 << collision.gameObject.layer) & wallLayer) != 0)
         {
-            Debug.Log("유도탄이 환경에 충돌하여 파괴됨");
             Destroy(gameObject);
         }
         else if (collision.collider.CompareTag("Player"))
         {
-            Debug.Log("플레이어 유도탄 맞고 즉사!!");
+            Debug.Log("플레이어 호밍 탄환 피격!");
+
+            Destroy(gameObject);
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+    }
+    public void Launch(Vector2 direction, float spd)
+    {
+        initialDirection = direction.normalized;
+        speed = spd;
+        transform.right = initialDirection; // 발사 방향으로 회전
     }
 }

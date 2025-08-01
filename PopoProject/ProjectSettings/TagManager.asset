@@ -16,6 +16,7 @@ TagManager:
   - SensorTrap
   - Wall
   - BackGround
+  - Bullet
   layers:
   - Default
   - TransparentFX

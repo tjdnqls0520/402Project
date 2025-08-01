@@ -35,6 +35,8 @@ public class PlayerMouseMovement : MonoBehaviour
     public float raytrens = 0.7f;
     public float checkceilingtrap = 0.7f;
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
+    private bool wasGroundedLastFrame = false;
+
 
     private Vector2 flyDirection;
     private Animator ani;
@@ -60,15 +62,17 @@ public class PlayerMouseMovement : MonoBehaviour
     private InputDirection lastClickDir = InputDirection.None;
     private float bothClickTime = 0f;
     private float bothClickThreshold = 0.1f;
-    private float fallCooldown = 0.2f;
+    private float fallCooldown = 0.5f;
     private float fallLockUntil = 0f;
     private RaycastHit2D Hit;
     private float wallStickY = 0f; // 고정할 Y값
     private bool isWallJumping = false;
-    private float wallSltickY = float.NaN;
-    private bool wasJumping = false; // 점프 중이었는지 기억하는 변수
-    private bool isLanding = false;
-    
+    private float leftFallClickTime = -1f;
+    private float rightFallClickTime = -1f;
+
+    private bool fallInputReleased = true;
+    private float lastFallInputTime = -999f;
+
 
 
 
@@ -102,10 +106,19 @@ public class PlayerMouseMovement : MonoBehaviour
         bool leftInputHeld = Input.GetMouseButton(0) || Input.GetKey(KeyCode.A);
         bool rightInputHeld = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
         bool anyMouseInput = Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
+        bool isBothClicked = Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && (leftInputDown || rightInputDown);
 
         bool isMoving = Mathf.Abs(rb.linearVelocity.x) > 0.1f;
         bool isInAir = isJumping || isDashing || isFlying || isBoostFlying;
         bool disablePlatformCollision = isMoving || isInAir;
+
+        if (leftInputDown) leftFallClickTime = Time.time;
+        if (rightInputDown) rightFallClickTime = Time.time;
+
+        bool validDoublePress = Mathf.Abs(leftFallClickTime - rightFallClickTime) < bothClickThreshold;
+
+        bool bothInputDown = leftInputDown && rightInputDown;
+        bool bothInputHeld = leftInputHeld && rightInputHeld;
 
         Physics2D.IgnoreLayerCollision(
             LayerMask.NameToLayer("Player"),
@@ -139,18 +152,15 @@ public class PlayerMouseMovement : MonoBehaviour
             checkceilingtrap = 0.35f;
         }
 
-
-
+       
         RaycastHit2D hit = IsBreak();
 
         leftHeld = leftInputHeld;
         rightHeld = rightInputHeld;
-
-        if (leftInputDown)
+        if (leftInputDown && !rightInputHeld)
         {
-            if(dirseto == true) dir = -1f;
+            if (dirseto == true) dir = -1f;
             else if (dirseto == false) dir = -0.5f;
-
 
             if (lastClickDir == InputDirection.Left && Time.time - leftClickTime < doubleClickThreshold && currentBoost != BoostType.None)
             {
@@ -164,8 +174,7 @@ public class PlayerMouseMovement : MonoBehaviour
                 leftClickTime = Time.time;
             }
         }
-
-        if (rightInputDown)
+        if (rightInputDown && !leftInputHeld)
         {
             if (dirseto == true) dir = 1f;
             else if (dirseto == false) dir = 0.5f;
@@ -185,15 +194,23 @@ public class PlayerMouseMovement : MonoBehaviour
 
         transform.localScale = new Vector3(dir, dirsetofl, dirsetofl);
 
-        if ((!grounded || !breaked) && Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && !isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
+        if ((!grounded || !breaked) &&validDoublePress &&fallInputReleased &&!isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
         {
             StartFall();
-            // 이벤트 타일 낙하 시 파괴
+            fallLockUntil = Time.time + fallCooldown;
+            fallInputReleased = false;
+
             if (breakHit.collider != null && breakHit.collider.CompareTag("Breakable"))
             {
                 Destroy(breakHit.collider.gameObject);
                 Debug.Log("낙하 중 이벤트 타일 파괴됨!");
             }
+        }
+
+        // 다시 버튼에서 손을 뗐을 때만 낙하 가능 상태 복구
+        if (!leftInputHeld && !rightInputHeld)
+        {
+            fallInputReleased = true;
         }
 
         if (!isFlying && !isDashing && !isJumping && (grounded || breaked) && !isBoostFlying)
@@ -209,6 +226,9 @@ public class PlayerMouseMovement : MonoBehaviour
                 rightFlying = true;
             }
         }
+
+        
+
 
         if (leftFlying && !leftHeld) EndFlying();
         if (rightFlying && !rightHeld) EndFlying(); 
@@ -291,11 +311,6 @@ public class PlayerMouseMovement : MonoBehaviour
         {
             wallStickY = float.NaN;
         }
-
-   
- 
-
-
     }
 
     void FixedUpdate()
@@ -318,7 +333,10 @@ public class PlayerMouseMovement : MonoBehaviour
         }
         else if (!isFlying && !isDashing && !isJumping && (IsGrounded() || IsBreak()))
         {
-            
+
+            if (!isBoostFlying && !(leftHeld && rightHeld))
+                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+
             if (!isBoostFlying)
                 rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
@@ -357,20 +375,41 @@ public class PlayerMouseMovement : MonoBehaviour
         leftFlying = rightFlying = false;
         rb.gravityScale = 2f;
 
+        //현재 입력 상태 재확인
+        bool leftNow = Input.GetMouseButton(0) || Input.GetKey(KeyCode.A);
+        bool rightNow = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
+
+        //한쪽만 누르고 있는 경우만 인정
+        if (leftNow && !rightNow)
+        {
+            leftHeld = true;
+            rightHeld = false;
+        }
+        else if (rightNow && !leftNow)
+        {
+            rightHeld = true;
+            leftHeld = false;
+        }
+        else
+        {
+            // 둘 다 눌려있거나 둘 다 안 눌려있으면 초기화
+            leftHeld = false;
+            rightHeld = false;
+        }
+
         if ((IsGrounded() || IsBreak()) && !isJumping)
         {
-            if (leftHeld && !rightHeld)
+            if (leftHeld)
             {
                 isRepeatQueued = true;
                 StartCoroutine(ResumeFlying(Vector2.left));
             }
-            else if (rightHeld && !leftHeld)
+            else if (rightHeld)
             {
                 isRepeatQueued = true;
                 StartCoroutine(ResumeFlying(Vector2.right));
             }
         }
-        
     }
 
     IEnumerator ResumeFlying(Vector2 dir)
@@ -391,8 +430,9 @@ public class PlayerMouseMovement : MonoBehaviour
         isFallevent = true;
         isFlying = false;
         rb.gravityScale = 8.5f;
-        rb.linearVelocity = Vector2.down * 20f;
+        rb.linearVelocity = Vector2.down * 10f;
         isFallevent = false;
+        EndFlying();
         Debug.Log("낙하");
     }
 
