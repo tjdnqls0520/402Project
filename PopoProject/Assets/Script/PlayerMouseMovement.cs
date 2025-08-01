@@ -33,6 +33,7 @@ public class PlayerMouseMovement : MonoBehaviour
     public float breakrayDistance = 1.4f;
     public float WallrayDistance = 0.5f;
     public float raytrens = 0.7f;
+    public float checkceilingtrap = 0.7f;
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
 
     private Vector2 flyDirection;
@@ -93,6 +94,7 @@ public class PlayerMouseMovement : MonoBehaviour
         bool groundedNow = IsGrounded() || IsBreak();
         bool noInput = !leftHeld && !rightHeld && !spaceHeld;
         IsGrounded();
+        CheckCeilingTrap();
 
 
         bool leftInputDown = Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.A);
@@ -121,6 +123,7 @@ public class PlayerMouseMovement : MonoBehaviour
             WallrayDistance = 0.5f;
             raytrens = 0.7f;
             rayLength = 0.8f;
+            checkceilingtrap = 0.7f;
 
         }
         if (Input.GetKeyDown(KeyCode.P))
@@ -133,6 +136,7 @@ public class PlayerMouseMovement : MonoBehaviour
             WallrayDistance = 0.25f;
             raytrens = 0.35f;
             rayLength = 0.4f;
+            checkceilingtrap = 0.35f;
         }
 
 
@@ -503,13 +507,11 @@ public class PlayerMouseMovement : MonoBehaviour
     {
         if (other.CompareTag("CrystalDash"))
         {
-           
             SetBoost(BoostType.Dash);
             other.gameObject.SetActive(false);
         }
         else if (other.CompareTag("CrystalJump"))
         {
-           
             SetBoost(BoostType.Jump);
             other.gameObject.SetActive(false);
         }
@@ -549,19 +551,60 @@ public class PlayerMouseMovement : MonoBehaviour
 
     public RaycastHit2D IsBreak()
     {
+        
+        float rayDistance = breakrayDistance;
+
+        Vector2 center = transform.position + Vector3.down * 0.2f;
+        Vector2 left = center + Vector2.left * 0.2f;
+        Vector2 right = center + Vector2.right * 0.2f;
+
+        RaycastHit2D centerHit = Physics2D.Raycast(center, Vector2.down, rayDistance, eventLayer);
+        RaycastHit2D leftHit = Physics2D.Raycast(left, Vector2.down, rayDistance, eventLayer);
+        RaycastHit2D rightHit = Physics2D.Raycast(right, Vector2.down, rayDistance, eventLayer);
+
+        Debug.DrawRay(center, Vector2.down * rayDistance, centerHit.collider ? Color.green : Color.red);
+        Debug.DrawRay(left, Vector2.down * rayDistance, leftHit.collider ? Color.green : Color.red);
+        Debug.DrawRay(right, Vector2.down * rayDistance, rightHit.collider ? Color.green : Color.red);
+
         if (isJumping || isDashing || isFlying || isBoostFlying)
         {
-            return new RaycastHit2D(); // 비행/점프/대시 중엔 무시
+            if (centerHit.collider != null && centerHit.collider.CompareTag("Trap")) return centerHit;
+            if (leftHit.collider != null && leftHit.collider.CompareTag("Trap")) return leftHit;
+            if (rightHit.collider != null && rightHit.collider.CompareTag("Trap")) return rightHit;
+
+            return new RaycastHit2D(); // Trap도 없으면 무시
         }
-        float rayDistance = breakrayDistance;
-        Vector2 origin = transform.position + Vector3.down * 0.2f;
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, eventLayer);
 
+        // 셋 중 하나라도 감지되면 가장 먼저 감지된 걸 반환
+        if (centerHit.collider != null) return centerHit;
+        if (leftHit.collider != null) return leftHit;
+        if (rightHit.collider != null) return rightHit;
 
+        return new RaycastHit2D(); // 아무것도 감지 안 됐으면 빈 값 반환
+    }
 
-        Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
+    private void CheckCeilingTrap()
+    {
+        float rayDistance = checkceilingtrap;
+        Vector2 center = transform.position + Vector3.up * 0.5f;
+        Vector2 left = center + Vector2.left * 0.2f;
+        Vector2 right = center + Vector2.right * 0.2f;
 
-        return hit;
+        RaycastHit2D centerHit = Physics2D.Raycast(center, Vector2.up, rayDistance, trapLayer);
+        RaycastHit2D leftHit = Physics2D.Raycast(left, Vector2.up, rayDistance, trapLayer);
+        RaycastHit2D rightHit = Physics2D.Raycast(right, Vector2.up, rayDistance, trapLayer);
+
+        Debug.DrawRay(center, Vector2.up * rayDistance, centerHit.collider ? Color.magenta : Color.gray);
+        Debug.DrawRay(left, Vector2.up * rayDistance, leftHit.collider ? Color.magenta : Color.gray);
+        Debug.DrawRay(right, Vector2.up * rayDistance, rightHit.collider ? Color.magenta : Color.gray);
+
+        if ((centerHit.collider != null && centerHit.collider.CompareTag("Trap")) ||
+            (leftHit.collider != null && leftHit.collider.CompareTag("Trap")) ||
+            (rightHit.collider != null && rightHit.collider.CompareTag("Trap")))
+        {
+            Debug.Log("🧠 머리 위 트랩과 충돌 - 사망!");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     public bool IsWalledRight()
