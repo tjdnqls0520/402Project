@@ -14,6 +14,8 @@ TagManager:
   - BounceLeftUp
   - BounceRightUp
   - SensorTrap
+  - Wall
+  - BackGround
   layers:
   - Default
   - TransparentFX
@@ -25,7 +27,7 @@ TagManager:
   - Wall
   - EventGround
   - Trap
-  - 
+  - OneWayGround
   - 
   - 
   - 

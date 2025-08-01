@@ -101,6 +101,16 @@ public class PlayerMouseMovement : MonoBehaviour
         bool rightInputHeld = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
         bool anyMouseInput = Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
 
+        bool isMoving = Mathf.Abs(rb.linearVelocity.x) > 0.1f;
+        bool isInAir = isJumping || isDashing || isFlying || isBoostFlying;
+        bool disablePlatformCollision = isMoving || isInAir;
+
+        Physics2D.IgnoreLayerCollision(
+            LayerMask.NameToLayer("Player"),
+            LayerMask.NameToLayer("OneWayGround"),
+            disablePlatformCollision
+        );
+
         if (Input.GetKeyDown(KeyCode.O))
         {
             dirseto = true;
@@ -429,6 +439,10 @@ public class PlayerMouseMovement : MonoBehaviour
         }
         Debug.Log("Boost 비행 종료");
     }
+    private bool IsLayer(GameObject obj, string layerName)
+    {
+        return obj.layer == LayerMask.NameToLayer(layerName);
+    }
 
     IEnumerator DelayedGravityRestore(float delay)
     {
@@ -440,6 +454,13 @@ public class PlayerMouseMovement : MonoBehaviour
     // ★ 벽 충돌 시 Boost 비행 강제 종료
     void OnCollisionEnter2D(Collision2D collision)
     {
+
+        if (IsLayer(collision.gameObject, "Ground"))
+        {
+            Debug.Log("바닥 접촉");
+            StopBoostFly();
+        }
+
         if (!collision.collider.CompareTag("OneWay"))
         {
             if ((isBoostFlying && collision.gameObject.layer == LayerMask.NameToLayer("Wall")) || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
@@ -505,23 +526,23 @@ public class PlayerMouseMovement : MonoBehaviour
     public bool IsGrounded()
     {
         if (isJumping || isDashing || isFlying || isBoostFlying)
-        {
-            return false; // 비행/점프/대시 중엔 무시
-        }
+            return false;
 
-        if (isJumping || isDashing || isFlying || isBoostFlying)
-        {
-            return new RaycastHit2D(); // 비행/점프/대시 중엔 무시
-        }
         float rayDistance = groundrayDistance;
-        Vector2 origin = transform.position + Vector3.down * 0.2f;
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, groundLayer);
 
+        Vector2 center = transform.position + Vector3.down * 0.2f;
+        Vector2 left = center + Vector2.left * 0.2f;
+        Vector2 right = center + Vector2.right * 0.2f;
 
+        bool centerHit = Physics2D.Raycast(center, Vector2.down, rayDistance, groundLayer);
+        bool leftHit = Physics2D.Raycast(left, Vector2.down, rayDistance, groundLayer);
+        bool rightHit = Physics2D.Raycast(right, Vector2.down, rayDistance, groundLayer);
 
-        Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
+        Debug.DrawRay(center, Vector2.down * rayDistance, centerHit ? Color.green : Color.red);
+        Debug.DrawRay(left, Vector2.down * rayDistance, leftHit ? Color.green : Color.red);
+        Debug.DrawRay(right, Vector2.down * rayDistance, rightHit ? Color.green : Color.red);
 
-        return hit.collider != null;
+        return centerHit || leftHit || rightHit;
     }
 
     public RaycastHit2D IsBreak()
