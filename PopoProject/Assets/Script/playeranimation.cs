@@ -36,7 +36,7 @@ public class playeranimation : MonoBehaviour
                 ani.SetBool("att", false);
         }
 
-        if( pl.GetComponent<PlayerMouseMovement>().getskill == true && (pl.GetComponent<PlayerMouseMovement>().IsGrounded() || pl.GetComponent<PlayerMouseMovement>().IsWalledLeft() || pl.GetComponent<PlayerMouseMovement>().IsWalledRight()))
+        if( pl.GetComponent<PlayerMouseMovement>().getskill == true && pl.GetComponent<PlayerMouseMovement>().isBoostFlying == false)
         {
             if (pl.GetComponent<PlayerMouseMovement>().dash == true)
             {
