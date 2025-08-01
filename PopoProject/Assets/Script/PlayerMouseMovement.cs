@@ -511,21 +511,17 @@ public class PlayerMouseMovement : MonoBehaviour
             return false; // 비행/점프/대시 중엔 무시
         }
 
-        float radius = 0.2f;
-        float distance = 1.3f;
-        Vector2 origin = (Vector2)transform.position + Vector2.down * 0.2f;
-
-        RaycastHit2D hit = Physics2D.CircleCast(origin, radius, Vector2.down, distance, groundLayer);
-
-        Debug.DrawLine(origin + Vector2.left * radius, origin + Vector2.right * radius, Color.yellow);
-        Debug.DrawLine(origin + Vector2.up * radius, origin + Vector2.down * radius, Color.yellow);
-
-        Debug.DrawRay(origin, Vector2.down * distance, Color.cyan);
-
-        if (hit.collider != null && hit.collider.CompareTag("OneWay"))
+        if (isJumping || isDashing || isFlying || isBoostFlying)
         {
-            return false;
+            return new RaycastHit2D(); // 비행/점프/대시 중엔 무시
         }
+        float rayDistance = groundrayDistance;
+        Vector2 origin = transform.position + Vector3.down * 0.2f;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, rayDistance, groundLayer);
+
+
+
+        Debug.DrawRay(origin, Vector2.down * rayDistance, hit.collider ? Color.green : Color.red);
 
         return hit.collider != null;
     }

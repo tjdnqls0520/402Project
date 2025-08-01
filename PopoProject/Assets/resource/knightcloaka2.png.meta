@@ -103,12 +103,12 @@ TextureImporter:
       name: knightcloaka2_0
       rect:
         serializedVersion: 2
-        x: 144
+        x: 143
         y: 0
         width: 282
         height: 257
-      alignment: 9
-      pivot: {x: 0.46463305, y: 0.5310458}
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: ffd580e3a0e95fa47a9f929ece5edfde
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
