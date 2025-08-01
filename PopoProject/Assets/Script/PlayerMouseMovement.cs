@@ -482,11 +482,13 @@ public class PlayerMouseMovement : MonoBehaviour
     {
         if (other.CompareTag("CrystalDash"))
         {
+           
             SetBoost(BoostType.Dash);
             other.gameObject.SetActive(false);
         }
         else if (other.CompareTag("CrystalJump"))
         {
+           
             SetBoost(BoostType.Jump);
             other.gameObject.SetActive(false);
         }
