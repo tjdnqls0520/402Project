@@ -62,6 +62,7 @@ public class playeranimation : MonoBehaviour
                 ani.SetBool("double", true);
                 ani.SetBool("up", false);
                 ani.SetBool("upspining", false);
+                pl.GetComponent<PlayerMouseMovement>().dash = false;
             }
             else if(pl.GetComponent<PlayerMouseMovement>().jump == true)
             {
@@ -69,6 +70,7 @@ public class playeranimation : MonoBehaviour
                 ani.SetBool("double", false);
                 ani.SetBool("up", true);
                 ani.SetBool("spin", false);
+                pl.GetComponent<PlayerMouseMovement>().jump = false;
             }
             
         }
@@ -81,10 +83,13 @@ public class playeranimation : MonoBehaviour
         if (other.CompareTag("CrystalDash"))
         {
             ani.SetBool("double", true);
+            ani.SetBool("up", false);
+
         }
         else if (other.CompareTag("CrystalJump"))
         {
             ani.SetBool("up", true);
+            ani.SetBool("double", false);
         }
     }
 
