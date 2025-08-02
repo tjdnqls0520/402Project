@@ -20,14 +20,14 @@ public class playeranimation : MonoBehaviour
         bool rightInputDown = Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.S);
         bool leftInputHeld = Input.GetMouseButton(0) || Input.GetKey(KeyCode.A);
         bool rightInputHeld = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
-
+        bool allheld = leftInputHeld && rightInputHeld;
 
         if (pl.GetComponent<PlayerMouseMovement>().isFlying == true)
         {
             timer = 0;
             ani.SetBool("jump", true);
         }
-        else if ((pl.GetComponent<PlayerMouseMovement>().IsGrounded() || pl.GetComponent<PlayerMouseMovement>().IsBreak()) && !leftInputHeld && !rightInputHeld)
+        else if ((pl.GetComponent<PlayerMouseMovement>().IsGrounded() || pl.GetComponent<PlayerMouseMovement>().IsBreak()) && ((!leftInputHeld && !rightInputHeld) || allheld))
         {
             timer += Time.deltaTime;
             ani.SetBool("jump", false);
@@ -64,13 +64,11 @@ public class playeranimation : MonoBehaviour
             {
                 ani.SetBool("spin", true);
                 ani.SetBool("double", true);
-                ani.SetBool("up", false);
                 ani.SetBool("upspining", false);
             }
             else if(pl.GetComponent<PlayerMouseMovement>().jump == true)
             {
                 ani.SetBool("upspining", true);
-                ani.SetBool("double", false);
                 ani.SetBool("up", true);
                 ani.SetBool("spin", false);
             }
