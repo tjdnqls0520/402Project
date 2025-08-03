@@ -57,6 +57,7 @@ public class PlayerMouseMovement : MonoBehaviour
     private bool doubleClickQueued = false;
     private bool isFallevent = false;
     private int queuedDirection = 0;
+    private bool falllimt = false;
 
     private enum InputDirection { None, Left, Right }
     private InputDirection lastClickDir = InputDirection.None;
@@ -75,7 +76,8 @@ public class PlayerMouseMovement : MonoBehaviour
 
 
 
-
+    private bool directionLocked = false;
+    private InputDirection lockedDirection = InputDirection.None;
     public enum BoostType { None, Dash, Jump }
     private BoostType currentBoost = BoostType.None;
 
@@ -87,6 +89,7 @@ public class PlayerMouseMovement : MonoBehaviour
 
     void Update()
     {
+
         bool grounded = IsGrounded();
         bool breaked = IsBreak();
         bool wallleft = IsWalledLeft();
@@ -107,6 +110,8 @@ public class PlayerMouseMovement : MonoBehaviour
         bool rightInputHeld = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
         bool anyMouseInput = Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
         bool isBothClicked = Mathf.Abs(leftClickTime - rightClickTime) < bothClickThreshold && (leftInputDown || rightInputDown);
+        leftHeld = leftInputHeld;
+        rightHeld = rightInputHeld;
 
         bool isMoving = Mathf.Abs(rb.linearVelocity.x) > 0.1f;
         bool isInAir = isJumping || isDashing || isFlying || isBoostFlying;
@@ -119,6 +124,26 @@ public class PlayerMouseMovement : MonoBehaviour
 
         bool bothInputDown = leftInputDown && rightInputDown;
         bool bothInputHeld = leftInputHeld && rightInputHeld;
+
+        if (!directionLocked)
+        {
+            if (leftHeld && !rightHeld)
+            {
+                directionLocked = true;
+                lockedDirection = InputDirection.Left;
+            }
+            else if (rightHeld && !leftHeld)
+            {
+                directionLocked = true;
+                lockedDirection = InputDirection.Right;
+            }
+        }
+
+        if (directionLocked)
+        {
+            leftHeld = lockedDirection == InputDirection.Left;
+            rightHeld = lockedDirection == InputDirection.Right;
+        }
 
         Physics2D.IgnoreLayerCollision(
             LayerMask.NameToLayer("Player"),
@@ -194,16 +219,21 @@ public class PlayerMouseMovement : MonoBehaviour
 
         transform.localScale = new Vector3(dir, dirsetofl, dirsetofl);
 
-        if ((!grounded || !breaked) &&validDoublePress &&fallInputReleased &&!isFlying && !isJumping && !isDashing && Time.time > fallLockUntil)
+        if ((!grounded || !breaked) && validDoublePress && fallInputReleased &&!isFlying && !isJumping && !isDashing && falllimt)
         {
+            isFallevent = true;
             StartFall();
-            fallLockUntil = Time.time + fallCooldown;
-            fallInputReleased = false;
 
-            if (breakHit.collider != null && breakHit.collider.CompareTag("Breakable"))
+            if (breakHit.collider != null && breakHit.collider.CompareTag("Breakable") && isFallevent == true && falllimt)
             {
                 Destroy(breakHit.collider.gameObject);
+                isFallevent = false;
+                falllimt = false;
                 Debug.Log("낙하 중 이벤트 타일 파괴됨!");
+            }
+            else
+            {
+                isFallevent = false;
             }
         }
 
@@ -227,7 +257,10 @@ public class PlayerMouseMovement : MonoBehaviour
             }
         }
 
-        
+        if(leftInputDown || rightInputDown)
+        {
+            falllimt = true;
+        }
 
 
         if (leftFlying && !leftHeld) EndFlying();
@@ -373,6 +406,7 @@ public class PlayerMouseMovement : MonoBehaviour
     {
         isFlying = false;
         leftFlying = rightFlying = false;
+        
         rb.gravityScale = 2f;
 
         //현재 입력 상태 재확인
@@ -427,11 +461,9 @@ public class PlayerMouseMovement : MonoBehaviour
 
     void StartFall()
     {
-        isFallevent = true;
         isFlying = false;
         rb.gravityScale = 8.5f;
-        rb.linearVelocity = Vector2.down * 10f;
-        isFallevent = false;
+        rb.linearVelocity = Vector2.down * 20f;
         EndFlying();
         Debug.Log("낙하");
     }

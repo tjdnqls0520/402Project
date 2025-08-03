@@ -168,5 +168,6 @@ MonoBehaviour:
   lifeTime: 10
   wallLayer:
     serializedVersion: 2
-    m_Bits: 128
-  detachCheckDelay: 0.1
+    m_Bits: 1416
+  knockbackForce: 30
+  forceDirection: {x: 1, y: 0}
