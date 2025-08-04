@@ -40334,6 +40334,75 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: febaa0cf0e53b2c4fb77a9ab16756976, type: 3}
+--- !u!1001 &1932978066
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 233758127215339026, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: direction.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 233758127215339026, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: direction.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 233758127215339026, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: currentBulletType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228358077654980036, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_Name
+      value: TrapShooter_mk2 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.67
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6430531223339136447, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
 --- !u!1 &2131128062
 GameObject:
   m_ObjectHideFlags: 0
@@ -40616,7 +40685,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 233758127215339026, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
       propertyPath: currentBulletType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6228358077654980036, guid: ed2d30d479c993c4bbd885fed7c8b956, type: 3}
       propertyPath: m_Name
@@ -40930,6 +40999,7 @@ SceneRoots:
   - {fileID: 6609560165791093898}
   - {fileID: 1137904503}
   - {fileID: 85318297707792172}
+  - {fileID: 1932978066}
   - {fileID: 419617388}
   - {fileID: 6557630}
   - {fileID: 7514920300980819204}

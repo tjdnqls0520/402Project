@@ -21,7 +21,7 @@ public class BreakablePlatform : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!isBreaking && collision.collider.CompareTag("Player"))
+        if (!isBreaking && (collision.collider.CompareTag("Player")|| collision.collider.CompareTag("Bullet")))
         {
             StartCoroutine(FadeAndRespawn());
         }
