@@ -554,16 +554,12 @@ public class PlayerMouseMovement : MonoBehaviour
         if (collision.collider.CompareTag("BounceLeftUp"))
         {
             Debug.Log("왼쪽 위로 튕김");
-
-            // Rigidbody2D에 힘을 줘서 튕기게 만들어요!
             Vector2 bounceForce = new Vector2(-12f, 15f); 
             rb.linearVelocity = bounceForce;
         }
         if (collision.collider.CompareTag("BounceRightUp"))
         {
             Debug.Log("오른쪽으로 튕김");
-
-            // Rigidbody2D에 힘을 줘서 튕기게 만들어요!
             Vector2 bounceForce = new Vector2(12f, 15f);
             rb.linearVelocity = bounceForce;
         }
