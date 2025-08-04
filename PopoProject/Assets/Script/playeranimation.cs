@@ -1,3 +1,4 @@
+using System.Reflection;
 using Unity.VisualScripting;
 using UnityEngine;
 using static PlayerMouseMovement;
@@ -7,6 +8,10 @@ public class playeranimation : MonoBehaviour
     Animator ani;
     public GameObject pl;
     float timer;
+    float climt = 0;
+    float d;
+    float j;
+    bool clim = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -21,6 +26,7 @@ public class playeranimation : MonoBehaviour
         bool leftInputHeld = Input.GetMouseButton(0) || Input.GetKey(KeyCode.A);
         bool rightInputHeld = Input.GetMouseButton(1) || Input.GetKey(KeyCode.S);
         bool allheld = leftInputHeld && rightInputHeld;
+
 
         if (pl.GetComponent<PlayerMouseMovement>().isFlying == true)
         {
@@ -51,12 +57,22 @@ public class playeranimation : MonoBehaviour
                 pl.GetComponent<PlayerMouseMovement>().jump = false;
             }
 
-               
-          
             pl.GetComponent<PlayerMouseMovement>().getskill = false;
         }
 
-       
+        if (pl.GetComponent<PlayerMouseMovement>().IsGrounded())
+        {
+            if (d > 0)
+            {
+                ani.SetBool("double", true);
+                d = 0;
+            }
+            else if(j > 0)
+            {
+                ani.SetBool("up", true);
+                j = 0;
+            }
+        }
 
         if (pl.GetComponent<PlayerMouseMovement>().isBoostFlying == true)
         {
@@ -75,6 +91,44 @@ public class playeranimation : MonoBehaviour
             
         }
 
+        if ((pl.GetComponent<PlayerMouseMovement>().IsWalledLeft() || pl.GetComponent<PlayerMouseMovement>().IsWalledRight()) && !pl.GetComponent<PlayerMouseMovement>().IsGrounded() 
+            && !pl.GetComponent<PlayerMouseMovement>().CastDiagonalRayRight() && !pl.GetComponent<PlayerMouseMovement>().CastDiagonalRayLeft()) {
+
+            ani.SetBool("clim", true);
+
+            if (rightInputDown || leftInputDown || leftInputHeld || rightInputHeld)
+            {
+                
+                ani.SetBool("clim", false);
+            }
+            
+        }
+        else
+        {
+            ani.SetBool("clim", false);
+        }
+
+        if (pl.GetComponent<PlayerMouseMovement>().CastDiagonalRayRight())
+        {
+            ani.SetBool("climstay", true);
+            if (leftInputDown || leftInputHeld)
+            {
+                Debug.Log("실행");
+                ani.SetBool("climstay", false);
+
+            }
+        }
+
+        if (pl.GetComponent<PlayerMouseMovement>().CastDiagonalRayLeft())
+        {
+            ani.SetBool("climstay", true);
+            if (rightInputDown || rightInputHeld)
+            {
+                Debug.Log("실행");
+                ani.SetBool("climstay", false);
+            }
+        }
+
 
     }
 
@@ -84,12 +138,21 @@ public class playeranimation : MonoBehaviour
         {
             ani.SetBool("double", true);
             ani.SetBool("up", false);
-
+            if (pl.GetComponent<PlayerMouseMovement>().dash)
+            {
+                d++;
+                j = 0;
+            }
         }
         else if (other.CompareTag("CrystalJump"))
         {
             ani.SetBool("up", true);
             ani.SetBool("double", false);
+            if (pl.GetComponent<PlayerMouseMovement>().jump)
+            {
+                j++;
+                d = 0;
+            }
         }
     }
 
