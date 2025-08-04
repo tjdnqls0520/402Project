@@ -34,6 +34,7 @@ public class PlayerMouseMovement : MonoBehaviour
     public float WallrayDistance = 0.5f;
     public float raytrens = 0.7f;
     public float checkceilingtrap = 0.7f;
+    public float dir = 1f;
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
     private bool wasGroundedLastFrame = false;
 
@@ -47,7 +48,6 @@ public class PlayerMouseMovement : MonoBehaviour
     private float doubleClickThreshold = 0.3f;
     private float boostStartTime;
 
-    private float dir = 1f;
     private float timer = 0;
 
     private bool isDashing = false;
