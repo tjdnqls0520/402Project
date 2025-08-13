@@ -18,6 +18,7 @@ public class PlayerMouseMovement : MonoBehaviour
     public float wallJumpForceY = 1f;
     public float rayLength = 0.8f;
     public LayerMask groundLayer;
+    public LayerMask slimeLayer;
     public LayerMask eventLayer;
     public LayerMask onewayLayer;
     public LayerMask trapLayer;
@@ -28,6 +29,7 @@ public class PlayerMouseMovement : MonoBehaviour
     public bool dash = false;
     public bool jump = false;
     public bool dirseto = true;
+    public bool chasize = true;
     public float dirsetofl = 1f;
     public float groundrayDistance = 1.3f;
     public float breakrayDistance = 1.4f;
@@ -37,6 +39,7 @@ public class PlayerMouseMovement : MonoBehaviour
     public float dir = 1f;
     private Vector2 boostDirection = Vector2.zero; // ★ Boost 비행 방향
     private bool wasGroundedLastFrame = false;
+
 
 
     private Vector2 flyDirection;
@@ -151,7 +154,7 @@ public class PlayerMouseMovement : MonoBehaviour
             disablePlatformCollision
         );
 
-        if (Input.GetKeyDown(KeyCode.O))
+        if (chasize == true)
         {
             dirseto = true;
             dir = 1f;
@@ -164,12 +167,12 @@ public class PlayerMouseMovement : MonoBehaviour
             checkceilingtrap = 0.7f;
 
         }
-        if (Input.GetKeyDown(KeyCode.P))
+        if (chasize == false)
         {
             dirseto = false;
             dirsetofl = 0.5f;
             dir = 0.5f;
-            groundrayDistance = 0.55f;
+            groundrayDistance = 0.6f;
             breakrayDistance = 0.6f;
             WallrayDistance = 0.25f;
             raytrens = 0.35f;
@@ -296,58 +299,31 @@ public class PlayerMouseMovement : MonoBehaviour
             return;
         }
 
-        if (IsWalledRight() && !IsGrounded())
+        if ((IsWalledLeft() || IsWalledRight()) && !IsGrounded())
         {
-            if (leftInputDown)
+            if (!isWallJumping)
+            {
+                float slowFallSpeed = -0.5f;
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, slowFallSpeed);
+            }
+
+            // 벽점프 입력
+            if (IsWalledRight() && Input.GetMouseButtonDown(0))
             {
                 isWallJumping = true;
                 StartFlying(Vector2.left);
-                return;
             }
-
-            if (float.IsNaN(wallStickY))
-                wallStickY = transform.position.y;
-
-            rb.linearVelocity = Vector2.zero;
-            rb.position = new Vector2(rb.position.x, wallStickY);
-            transform.position = new Vector3(transform.position.x, wallStickY, transform.position.z);
-
-            if (rightInputDown && !rightHit.collider)
-            {
-                wallStickY = float.NaN;
-                transform.position += new Vector3(1f, 1f, 0f);
-            }
-        }
-        else if (IsWalledLeft() && !IsGrounded())
-        {
-            if (rightInputDown)
+            else if (IsWalledLeft() && Input.GetMouseButtonDown(1))
             {
                 isWallJumping = true;
                 StartFlying(Vector2.right);
-                return;
             }
-
-            if (float.IsNaN(wallStickY))
-                wallStickY = transform.position.y;
-
-            rb.linearVelocity = Vector2.zero;
-            rb.position = new Vector2(rb.position.x, wallStickY);
-            transform.position = new Vector3(transform.position.x, wallStickY, transform.position.z);
-
-            if (leftInputDown && !leftHit.collider)
-            {
-                wallStickY = float.NaN;
-                transform.position += new Vector3(-1f, 1f, 0f);
-            }
-        }
-        else
-        {
-            wallStickY = float.NaN;
         }
     }
 
     void FixedUpdate()
     {
+
         RaycastHit2D hit = IsBreak();
         if (isFlying)
         {
@@ -462,8 +438,8 @@ public class PlayerMouseMovement : MonoBehaviour
     void StartFall()
     {
         isFlying = false;
-        rb.gravityScale = 8.5f;
-        rb.linearVelocity = Vector2.down * 20f;
+        rb.gravityScale = 17.0f;
+        rb.linearVelocity = Vector2.down * 10f;
         EndFlying();
         Debug.Log("낙하");
     }
@@ -603,8 +579,8 @@ public class PlayerMouseMovement : MonoBehaviour
         float rayDistance = groundrayDistance;
 
         Vector2 center = transform.position + Vector3.down * 0.2f;
-        Vector2 left = center + Vector2.left * 0.2f;
-        Vector2 right = center + Vector2.right * 0.2f;
+        Vector2 left = center + Vector2.left * 0.1f;
+        Vector2 right = center + Vector2.right * 0.1f;
 
         bool centerHit = Physics2D.Raycast(center, Vector2.down, rayDistance, groundLayer);
         bool leftHit = Physics2D.Raycast(left, Vector2.down, rayDistance, groundLayer);
@@ -623,8 +599,8 @@ public class PlayerMouseMovement : MonoBehaviour
         float rayDistance = breakrayDistance;
 
         Vector2 center = transform.position + Vector3.down * 0.2f;
-        Vector2 left = center + Vector2.left * 0.2f;
-        Vector2 right = center + Vector2.right * 0.2f;
+        Vector2 left = center + Vector2.left * 0.1f;
+        Vector2 right = center + Vector2.right * 0.1f;
 
         RaycastHit2D centerHit = Physics2D.Raycast(center, Vector2.down, rayDistance, eventLayer);
         RaycastHit2D leftHit = Physics2D.Raycast(left, Vector2.down, rayDistance, eventLayer);
@@ -655,8 +631,8 @@ public class PlayerMouseMovement : MonoBehaviour
     {
         float rayDistance = checkceilingtrap;
         Vector2 center = transform.position + Vector3.up * 0.5f;
-        Vector2 left = center + Vector2.left * 0.2f;
-        Vector2 right = center + Vector2.right * 0.2f;
+        Vector2 left = center + Vector2.left * 0.1f;
+        Vector2 right = center + Vector2.right * 0.1f;
 
         RaycastHit2D centerHit = Physics2D.Raycast(center, Vector2.up, rayDistance, trapLayer);
         RaycastHit2D leftHit = Physics2D.Raycast(left, Vector2.up, rayDistance, trapLayer);
@@ -670,7 +646,7 @@ public class PlayerMouseMovement : MonoBehaviour
             (leftHit.collider != null && leftHit.collider.CompareTag("Trap")) ||
             (rightHit.collider != null && rightHit.collider.CompareTag("Trap")))
         {
-            Debug.Log("🧠 머리 위 트랩과 충돌 - 사망!");
+            Debug.Log("머리 위 트랩과 충돌 - 사망!");
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
@@ -684,7 +660,7 @@ public class PlayerMouseMovement : MonoBehaviour
 
         float rayDistance = WallrayDistance;
         Vector2 origin = transform.position + Vector3.right * 0.2f;
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, rayDistance, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, rayDistance, slimeLayer);
 
         // 원웨이 플랫폼 무시 처리 (태그 기반)
         if (hit.collider != null && hit.collider.CompareTag("OneWay"))
@@ -704,7 +680,7 @@ public class PlayerMouseMovement : MonoBehaviour
 
         float rayDistancee = WallrayDistance;
         Vector2 originn = transform.position + Vector3.left * 0.2f;
-        RaycastHit2D hit = Physics2D.Raycast(originn, Vector2.left, rayDistancee, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(originn, Vector2.left, rayDistancee, slimeLayer);
 
         // 원웨이 플랫폼 무시 처리 (태그 기반)
         if (hit.collider != null && hit.collider.CompareTag("OneWay"))
@@ -721,7 +697,7 @@ public class PlayerMouseMovement : MonoBehaviour
         Vector2 origin = (Vector2)transform.position + new Vector2(0f, raytrens);
         Vector2 direction = new Vector2(1.8f, 1f).normalized;
 
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, slimeLayer);
 
         // 원웨이 플랫폼 무시 처리 (태그 기반)
         if (hit.collider != null && hit.collider.CompareTag("OneWay"))
@@ -737,7 +713,7 @@ public class PlayerMouseMovement : MonoBehaviour
         Vector2 origin = (Vector2)transform.position + new Vector2(0f, raytrens);
         Vector2 direction = new Vector2(-1.8f, 1f).normalized;
 
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, slimeLayer);
 
         // 원웨이 플랫폼 무시 처리 (태그 기반)
         if (hit.collider != null && hit.collider.CompareTag("OneWay"))
