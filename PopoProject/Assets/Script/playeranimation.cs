@@ -91,22 +91,7 @@ public class playeranimation : MonoBehaviour
             
         }
 
-        if ((pl.GetComponent<PlayerMouseMovement>().IsWalledLeft() || pl.GetComponent<PlayerMouseMovement>().IsWalledRight()) && !pl.GetComponent<PlayerMouseMovement>().IsGrounded() 
-            && !pl.GetComponent<PlayerMouseMovement>().CastDiagonalRayRight() && !pl.GetComponent<PlayerMouseMovement>().CastDiagonalRayLeft()) {
-
-            ani.SetBool("clim", true);
-
-            if (rightInputDown || leftInputDown || leftInputHeld || rightInputHeld)
-            {
-                
-                ani.SetBool("clim", false);
-            }
-            
-        }
-        else
-        {
-            ani.SetBool("clim", false);
-        }
+        
 
         if (pl.GetComponent<PlayerMouseMovement>().CastDiagonalRayRight())
         {
@@ -155,6 +140,4 @@ public class playeranimation : MonoBehaviour
             }
         }
     }
-
-
 }
