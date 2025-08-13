@@ -17,6 +17,7 @@ TagManager:
   - Wall
   - BackGround
   - Bullet
+  - Pushable
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,7 @@ TagManager:
   - EventGround
   - Trap
   - OneWayGround
-  - 
+  - Slime
   - 
   - 
   - 
