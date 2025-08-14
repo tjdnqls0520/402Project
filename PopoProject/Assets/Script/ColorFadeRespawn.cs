@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class BreakablePlatform : MonoBehaviour
+public class ColorFadeRespawn : MonoBehaviour
 {
     public float fadeDuration = 1.5f;
     public float respawnDelay = 3f;
